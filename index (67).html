@@ -1,0 +1,2782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Televendas | Rede Nilo</title>
+<style>
+:root{
+  --bg:#F7F7F5;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --text:#333333;
+  --muted:#6b7280;
+  --line:#e4e7ec;
+  --primary:#FFC400;
+  --primary-dark:#E6A100;
+  --navy:#1B2A4A;
+  --green:#17834f;
+  --red:#c93c3c;
+  --orange:#dc7b14;
+  --blue:#2962b8;
+  --shadow:0 10px 30px rgba(27,42,74,.08);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.header{background:linear-gradient(135deg,var(--navy),#243a63);color:#fff;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:30;box-shadow:0 6px 18px rgba(17,27,45,.18)}
+.brand{display:flex;align-items:center;gap:14px}.brand-mark{width:48px;height:48px;border-radius:14px;background:var(--primary);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:22px}
+.brand h1{font-size:20px;margin:0 0 4px}.brand p{font-size:12px;margin:0;color:#cfd7e5}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.clock{font-variant-numeric:tabular-nums;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:10px 12px;border-radius:10px}
+.sync{font-size:11px;color:#cfd7e5}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--primary);color:var(--navy)}.btn-primary:hover{background:#ffd633}
+.btn-light{background:#fff;color:var(--navy)}.btn-dark{background:var(--navy);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+.btn-danger{background:#fff0f0;color:var(--red);border:1px solid #f4caca}
+.btn-sm{padding:7px 10px;font-size:12px}
+.main{padding:22px 26px 36px;max-width:1900px;margin:0 auto}
+.toolbar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;align-items:end;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow);margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:150px}.field label{font-size:12px;color:var(--muted);font-weight:700}
+.field input,.field select,.field textarea{border:1px solid #d6dae2;border-radius:9px;padding:10px 11px;background:#fff;color:var(--text)}
+.toolbar-spacer{flex:1}.quick-filters{display:flex;gap:7px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:18px}.tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:10px 16px;border-radius:999px;font-weight:800}.tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.view{display:none}.view.active{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}
+.kpi .label{font-size:12px;color:var(--muted);font-weight:700}.kpi .value{font-size:26px;font-weight:900;margin-top:8px}.kpi .sub{font-size:11px;color:var(--muted);margin-top:6px}
+.kpi.good .value{color:var(--green)}.kpi.bad .value{color:var(--red)}.kpi.warn .value{color:var(--orange)}
+.grid-2{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.panel h2{font-size:16px;margin:0 0 4px}.panel .hint{color:var(--muted);font-size:12px;margin:0 0 16px}
+.stage-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.stage-metric{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:14px}
+.stage-metric .name{font-size:11px;color:var(--muted);min-height:30px}.stage-metric .time{font-size:17px;font-weight:900;margin-top:8px}
+.chart-bars{display:flex;align-items:end;gap:8px;height:210px;border-bottom:1px solid var(--line);padding:8px 4px 0;overflow-x:auto}
+.bar-col{min-width:34px;flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.bar{width:72%;min-height:2px;background:linear-gradient(180deg,var(--primary),var(--primary-dark));border-radius:6px 6px 0 0}
+.bar-label{font-size:10px;color:var(--muted)}
+.daily-bar-group{display:flex;gap:4px;align-items:flex-end;height:100%;width:100%;justify-content:center}
+.daily-bar{width:16px;min-height:2px;border-radius:4px 4px 0 0}
+.daily-bar.total{background:#c7ccd4}
+.daily-bar.delivered{background:var(--navy)}
+.status-list{display:flex;flex-direction:column;gap:12px}.status-row{display:grid;grid-template-columns:145px 1fr 42px;align-items:center;gap:10px;font-size:12px}
+.status-track{height:10px;background:#eef1f5;border-radius:999px;overflow:hidden}.status-fill{height:100%;border-radius:999px}.status-count{text-align:right;font-weight:800}
+.kanban-wrap{overflow:visible;padding-bottom:8px}.kanban{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;width:100%}
+.kanban-col{background:#edf1f5;border:1px solid #dfe4eb;border-radius:12px;min-height:300px;padding:8px}
+.kanban-col.drag-over{outline:3px solid rgba(255,196,0,.55);background:#fff8dc}
+.col-head{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:2px 2px 8px}
+.col-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--text);line-height:1.2}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.badge{width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-size:11px;flex:0 0 auto}
+.cards{display:flex;flex-direction:column;gap:8px}
+.order-card{background:#fff;border:1.5px solid rgba(201,60,60,.22);border-radius:12px;padding:10px;box-shadow:0 4px 10px rgba(17,27,45,.05);cursor:grab}
+.order-card.dragging{opacity:.55}
+.order-card.priority,.order-card.late{border-left:3px solid var(--red)}
+.order-urgent{color:var(--red);font-weight:900;font-size:9px;letter-spacing:.02em;margin:1px 0 5px}
+.order-changes-pill{display:inline-flex;align-items:center;gap:4px;background:#fff1d6;color:#915b00;font-weight:800;font-size:9px;padding:3px 7px;border-radius:999px;margin:1px 0 5px;white-space:nowrap}
+.order-top{display:flex;justify-content:space-between;align-items:center;gap:5px}
+.order-id{font-size:10px;color:var(--muted);font-weight:800}
+.order-type-pill{font-size:9px;background:#eef1f5;color:var(--text);padding:3px 8px;border-radius:999px;font-weight:800;white-space:nowrap}
+.card-delete{width:20px;height:20px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--red);font-size:13px;line-height:1;padding:0;display:grid;place-items:center;flex:0 0 auto}
+.card-priority{width:20px;height:20px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:11px;line-height:1;padding:0;display:grid;place-items:center;flex:0 0 auto}
+.card-priority.is-urgent{background:#fff0f0;border-color:#f4caca;color:var(--red)}
+.card-priority:hover{background:#fff8e1;border-color:#ffe082}
+.blink-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;animation:blinkDot 1s ease-in-out infinite}
+.blink-dot.blink-red{background:var(--red)}
+.blink-dot.blink-yellow{background:#f2c200}
+@keyframes blinkDot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(201,60,60,.5)}50%{opacity:.25;box-shadow:0 0 0 4px rgba(201,60,60,0)}}
+.card-delete:hover{background:#fff0f0;border-color:#f4caca}
+.order-client{font-size:12px;font-weight:900;margin:6px 0 5px;color:var(--text);line-height:1.25}
+.order-line{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);margin-bottom:4px;flex-wrap:wrap}
+.order-line .ic{font-size:10px}
+.order-line.assign{font-weight:800}
+.order-line.assign .missing{color:var(--orange)}
+.order-line.assign .set{color:var(--text)}
+.timer-box{background:#f4f6f9;border-radius:9px;padding:7px;margin:8px 0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.timer-label{font-size:7.5px;text-transform:uppercase;color:var(--muted);font-weight:800;letter-spacing:.01em;white-space:nowrap}
+.timer-value{font-weight:900;font-size:11px;margin-top:2px;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.order-sub{font-size:9px;color:var(--muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-sub b{color:var(--text);font-weight:800}
+.order-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:8px}
+.order-actions .btn{min-width:0;padding:7px 3px;font-size:9.5px;border-radius:8px;font-weight:800;background:#fff;border:1px solid var(--line);color:var(--text);line-height:1.15}
+.order-actions .btn.btn-advance{background:var(--primary);color:var(--navy);border:0}
+.order-actions .btn.btn-advance:hover{background:var(--primary-dark)}
+.order-actions .btn.btn-done{background:#e9f7ef;color:var(--green);border:1px solid #bfe4ce}
+.sla-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.daily-sla-display{border:1px solid var(--line);background:#f8fafc;border-radius:10px;padding:8px 11px;min-width:190px}
+.daily-sla-display .daily-label{font-size:9px;color:var(--muted);font-weight:800;text-transform:uppercase}
+.daily-sla-display .daily-value{font-size:12px;font-weight:900;margin-top:3px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+.data-table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff}
+.data-table th{position:sticky;top:0;background:var(--navy);color:#fff;text-align:left;font-size:11px;padding:11px 10px;white-space:nowrap}
+.data-table td{padding:10px;border-bottom:1px solid var(--line);font-size:11px;white-space:nowrap}
+.data-table tr:hover td{background:#fffbea}
+.sla-ok{color:var(--green);background:#e9f7ef;border-radius:999px;padding:4px 8px;font-weight:800;font-size:10px}
+.sla-bad{color:var(--red);background:#fff0f0;border-radius:999px;padding:4px 8px;font-weight:800;font-size:10px}
+.client-tools{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.search{min-width:280px;flex:1;border:1px solid #d6dae2;border-radius:10px;padding:10px 12px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(10,17,28,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:18px;width:min(760px,100%);max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.28)}
+.modal.modal-wide{width:min(1000px,100%)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;font-size:18px}.modal-body{padding:20px}
+.modal-foot{padding:15px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+.close{background:#f2f4f7;border:0;width:34px;height:34px;border-radius:9px;font-size:20px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.span-2{grid-column:span 2}
+.note{background:#fff8db;border:1px solid #f5dd8a;border-radius:10px;padding:11px;font-size:11px;color:#6d5710;margin-bottom:14px}
+.whatsapp-order{margin:0;white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #dfe4eb;border-radius:10px;padding:14px;min-height:120px;max-height:260px;overflow:auto;font-size:12px;line-height:1.55}
+.changes-table{width:100%;border-collapse:collapse;margin-top:10px}.changes-table th{background:var(--navy);color:#fff;padding:8px;text-align:left;font-size:10px}.changes-table td{padding:8px;border-bottom:1px solid var(--line);font-size:10px}
+.change-type{display:inline-flex;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900;background:#eef1f5}
+.change-type.cancel{background:#fff0f0;color:var(--red)}.change-type.replace{background:#fff1d6;color:#915b00}.change-type.add{background:#e9f7ef;color:var(--green)}
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:12px}
+.toast{position:fixed;right:22px;bottom:22px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);z-index:200;opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.footer-note{font-size:11px;color:var(--muted);text-align:center;padding-top:16px}
+.auth-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy),#243a63);display:flex;align-items:center;justify-content:center;padding:20px;z-index:500}
+.auth-card{background:#fff;border-radius:18px;width:min(440px,100%);max-height:94vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.3);padding:28px}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.auth-brand .brand-mark{width:42px;height:42px;border-radius:12px;background:var(--primary);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:19px;flex:0 0 auto}
+.auth-brand h2{margin:0;font-size:17px;color:var(--navy)}
+.auth-brand p{margin:2px 0 0;font-size:11px;color:var(--muted)}
+.auth-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.auth-field label{font-size:12px;color:var(--muted);font-weight:700}
+.auth-field input{border:1px solid #d6dae2;border-radius:9px;padding:11px 12px;background:#fff;font-size:14px}
+.auth-error{background:#fff0f0;border:1px solid #f4caca;color:var(--red);border-radius:9px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none}
+.auth-error.show{display:block}
+.auth-success{background:#e9f7ef;border:1px solid #bfe4ce;color:var(--green);border-radius:9px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none}
+.auth-success.show{display:block}
+.auth-links{display:flex;justify-content:space-between;margin-top:14px;font-size:12px}
+.auth-links a{color:var(--navy);font-weight:700;text-decoration:none;cursor:pointer}
+.auth-links a:hover{text-decoration:underline}
+.auth-submit{width:100%;padding:12px;border:0;border-radius:10px;background:var(--primary);color:var(--navy);font-weight:800;font-size:14px;cursor:pointer;margin-top:6px}
+.store-select-btn{width:100%;padding:16px 18px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);font-weight:800;font-size:15px;cursor:pointer;text-align:left;transition:.15s;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.store-select-btn:hover{border-color:var(--primary);background:#fffbea;box-shadow:0 2px 10px rgba(255,196,0,.25)}
+.store-select-name{font-size:15px;font-weight:800;color:var(--navy)}
+.store-select-cta{font-size:12px;font-weight:900;color:var(--navy);background:var(--primary);padding:6px 12px;border-radius:999px;white-space:nowrap}
+
+.sep-order-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;position:relative;overflow:hidden}
+.sep-order-card.priority{border-left:5px solid var(--red)}
+.sep-order-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.sep-order-client{font-size:19px;font-weight:900;color:var(--navy)}
+.sep-order-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.sep-order-timer{background:var(--navy);color:#fff;border-radius:12px;padding:10px 16px;text-align:center;min-width:130px}
+.sep-order-timer .label{font-size:9px;text-transform:uppercase;opacity:.7;font-weight:800;letter-spacing:.05em}
+.sep-order-timer .value{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;margin-top:2px}
+.sep-progress-wrap{margin-bottom:16px}
+.sep-progress-track{height:14px;background:#eef1f5;border-radius:999px;overflow:hidden;margin-bottom:6px}
+.sep-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:999px;transition:width .3s}
+.sep-progress-label{font-size:13px;font-weight:800;color:var(--navy);display:flex;justify-content:space-between}
+.sep-items-list{border:1px solid var(--line);border-radius:12px;max-height:340px;overflow:auto;margin-bottom:14px}
+.sep-item-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none}
+.sep-item-row:last-child{border-bottom:0}
+.sep-item-row:hover{background:#fffbea}
+.sep-item-row.done{background:#f3fbf6}
+.sep-item-check{width:24px;height:24px;border-radius:7px;border:2px solid #cfd5dd;flex:0 0 auto;display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;transition:.15s}
+.sep-item-row.done .sep-item-check{background:var(--green);border-color:var(--green)}
+.sep-item-text{font-size:13px;color:var(--text);flex:1}
+.sep-item-row.done .sep-item-text{color:var(--muted);text-decoration:line-through}
+.sep-item-qty{font-size:11px;font-weight:800;color:var(--navy);background:#eef1f5;padding:4px 9px;border-radius:999px;flex:0 0 auto}
+.sep-item-edit-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:13px;flex:0 0 auto;cursor:pointer}
+.sep-item-edit-btn:hover{background:#fffbea;border-color:var(--primary);color:var(--navy)}
+.sep-actions{display:flex;gap:10px;flex-wrap:wrap}
+.sep-finish-btn{flex:1;padding:14px;border:0;border-radius:12px;background:var(--green);color:#fff;font-weight:900;font-size:14px;cursor:pointer}
+.sep-finish-btn:hover{background:#136b40}
+.sep-finish-btn:disabled{background:#c8cdd4;cursor:not-allowed}
+.sep-no-items{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+.sep-add-item-row{display:flex;gap:8px;padding:10px 14px}
+.sep-add-item-row input{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+.sep-add-item-row button{border:0;background:var(--navy);color:#fff;border-radius:8px;padding:8px 14px;font-weight:800;font-size:12px}
+
+.live-sep-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface-2)}
+.live-sep-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;cursor:pointer}
+.live-sep-name{font-weight:800;font-size:13px;color:var(--navy)}
+.live-sep-sub{font-size:11px;color:var(--muted)}
+.live-sep-pct{font-weight:900;font-size:15px;color:var(--navy);min-width:48px;text-align:right}
+.live-sep-track{height:9px;background:#e4e7ec;border-radius:999px;overflow:hidden;margin-top:8px}
+.live-sep-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark))}
+.live-sep-details{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);gap:14px;grid-template-columns:1fr 1fr}
+.live-sep-details.open{display:grid}
+.live-sep-details .col h4{margin:0 0 6px;font-size:11px;text-transform:uppercase;color:var(--muted)}
+.live-sep-details .col ul{margin:0;padding-left:16px;font-size:12px;line-height:1.7}
+
+.auth-submit:hover{background:var(--primary-dark)}
+.auth-code-boxes{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.auth-code-boxes input{width:44px;height:52px;text-align:center;font-size:20px;font-weight:800;border:1px solid #d6dae2;border-radius:9px}
+.admin-tabs{display:flex;gap:8px;margin-bottom:18px}
+.admin-tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px}
+.admin-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.status-pill{font-size:10px;font-weight:800;padding:4px 9px;border-radius:999px}
+.status-pill.pendente{background:#fff1d6;color:#915b00}
+.status-pill.ativo{background:#e9f7ef;color:var(--green)}
+.status-pill.bloqueado{background:#fff0f0;color:var(--red)}
+@media(max-width:1250px){.kpis{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:1fr}.stage-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.kanban{grid-template-columns:repeat(3,minmax(0,1fr))}.form-grid{grid-template-columns:1fr}.span-2{grid-column:span 1}}
+
+/* ===== RESPONSIVO — MOBILE ===== */
+@media(max-width:760px){
+  .main{padding:14px 12px 28px}
+  .header{flex-wrap:wrap;padding:14px;gap:10px}
+  .brand{width:100%}
+  .brand p{display:none}
+  .header-actions{width:100%;justify-content:flex-start;gap:8px}
+  .header-actions .btn{flex:1 1 auto;justify-content:center;font-size:12px;padding:9px 10px}
+  .header-actions .sync,.header-actions .clock{flex:0 0 auto;font-size:10px;padding:7px 9px}
+
+  .toolbar{padding:12px;gap:10px}
+  .toolbar .field{min-width:0;flex:1 1 130px}
+  .quick-filters{width:100%}
+  .quick-filters .btn{flex:1 1 auto}
+  .sla-toolbar{width:100%;justify-content:space-between}
+  .daily-sla-display{min-width:0;flex:1}
+
+  .tabs{gap:6px;-webkit-overflow-scrolling:touch}
+  .tab{padding:8px 12px;font-size:12px;white-space:nowrap}
+
+  .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
+  .kpi{padding:13px}
+  .kpi .value{font-size:20px}
+  .stage-grid{grid-template-columns:repeat(2,1fr)}
+
+  .kanban{grid-template-columns:1fr;gap:12px}
+  .kanban-col{min-height:auto}
+
+  .grid-2{grid-template-columns:1fr;gap:12px}
+  .panel{padding:14px}
+
+  .table-wrap{max-width:100%}
+  .data-table{font-size:10px}
+  .data-table th,.data-table td{padding:8px 6px}
+
+  .modal,.modal.modal-wide{width:100%;max-width:100%;border-radius:14px 14px 0 0;position:fixed;left:0;right:0;bottom:0;max-height:88vh;margin:0}
+  .modal-backdrop{align-items:flex-end;padding:0}
+  .modal-backdrop.open{align-items:flex-end}
+  .form-grid{grid-template-columns:1fr;gap:10px}
+  .modal-body{padding:16px}
+  .modal-foot{flex-wrap:wrap;padding:12px 16px}
+  .modal-foot .btn{flex:1 1 auto;justify-content:center}
+
+  .client-tools{flex-direction:column;align-items:stretch}
+  .client-tools > div:last-child{flex-direction:column;align-items:stretch}
+  .search{min-width:0}
+
+  .auth-card{padding:22px 18px;border-radius:14px}
+  .store-select-btn{padding:14px}
+  .store-select-name{font-size:13px}
+  .store-select-cta{font-size:11px;padding:5px 10px}
+
+  .admin-tabs{flex-wrap:wrap}
+  .admin-tab{flex:1 1 auto;text-align:center;font-size:12px;padding:8px 10px}
+
+  .order-card{padding:9px}
+  .order-actions{gap:4px}
+  .order-actions .btn{font-size:9px;padding:7px 3px}
+
+  /* Painel do Separador — uso principal é no celular */
+  .sep-order-card{padding:14px}
+  .sep-order-head{flex-direction:column;align-items:stretch}
+  .sep-order-client{font-size:16px}
+  .sep-order-timer{width:100%;padding:10px}
+  .sep-order-timer .value{font-size:26px}
+  .sep-progress-label{font-size:12px}
+  .sep-items-list{max-height:none}
+  .sep-item-row{padding:14px 12px;gap:10px}
+  .sep-item-check{width:28px;height:28px;font-size:16px}
+  .sep-item-text{font-size:14px}
+  .sep-item-qty{font-size:11px;padding:5px 8px}
+  .sep-item-edit-btn{width:34px;height:34px;font-size:15px}
+  .sep-add-item-row{flex-direction:column;padding:12px}
+  .sep-add-item-row input{padding:11px}
+  .sep-add-item-row button{padding:11px}
+  .sep-finish-btn{padding:16px;font-size:15px}
+  .sep-no-items{font-size:12px;padding:16px}
+
+  .live-sep-card{padding:12px}
+  .live-sep-head{flex-direction:column;align-items:flex-start;gap:6px}
+  .live-sep-pct{align-self:flex-end}
+  .live-sep-details{grid-template-columns:1fr}
+}
+@media(max-width:420px){
+  #separatorHeaderSub{display:none}
+  #separatorKpis .kpi .value{font-size:18px}
+  .kpis{grid-template-columns:1fr}
+  .stage-grid{grid-template-columns:1fr}
+  .header-actions .btn span{display:none}
+}
+
+</style>
+</head>
+<body>
+
+<div class="auth-screen" id="authScreen">
+  <!-- LOGIN -->
+  <div class="auth-card" id="authCardLogin">
+    <div style="text-align:center;margin-bottom:22px">
+      <img id="loginLogoBox" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAAAuCAYAAADObTDHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFxEAABcRAcom8z8AABEGSURBVHhe7VwHkBRFF96Z2b1IkiCSJImeBAvJSUAxgKCAgCAgEgRU8n8i4TgQSiyCgaBnUSASFYtgKSh1KBIFBDkQJEjmJCn5AI9w8P76eumenp69vZm9Q+C4r+qr3Znp6X79+nVP9+vgoRzkIAvhUW/kIAeZwS0xqKtXr9Lu3btpw4YNjOvXr6effvopKH/77Tc6c+aMGlW6OHbsGK1bt06kkV0IXW3evFnNrsDFixdpx44dtvduJSHTtm3b6PTp06o4NlgM6saNGyETOHXqFMXFxVG5cuVI13XyeDyuWLBgQerQoQP9/vvv6coEwGArVqxoez+7MD4+XuSdY8+ePdSzZ08qUaKELfx/RZRPq1ataPXq1ZbykZElBgWgtShVqpRNiFAYHh5OU6ZMCSgTMGHCBNs72YUlS5akS5cuibwDX375JeXJk8cW9nZy1KhRwm5kZNqgADTBcobz5dOpVSsvDRkSScOGRVFcnJ3DhkXQu+96btKg7t3DqEwZwyL0V199ZZELOHnyJOXPn58993o1io2NpPh4e/zpEfLExkaxd+W0oqM91Ly5hwYP5jIF5+jRHqpfX1ayRn36RLiWZejQKIqONlvz+fPnizwD3377rUXO4sUN6tjRJ95X47wVRDoonwoVUD6m3t5//31hOxyZMij+TvXq1UUiLVp46a+/DCLSHBDJc2p06ZJOgwZ5hdAw0uPHj4t0gDfffFOk1a+fl4j0APEG59SpPtI0UzGNGnlo715ZFmeMiTELul075Nm9LIsX+8gw/LI0aNBALg5WeQoUKHAzDY0GDPDS+fNOdZv1TEvTadIkL2maWQGSkpIsMmfaoD7//HMRea1ayCxoV75zatS9O4zKH6fctKJjyPtmBQvqdPo0ClB9PziPHTMod25TIRUreujKFXu4jDhwoGlMkZE6HT7sXpaUFJ2KFPHLAgPHwISXA/DWW2+JNLp0QeVBwdrj+W+p0YcfmpW+ffv2onwAhBBQDSYYgZSUFCpSpIioQZs3I9OqAO554oQhPgM1atQQ8j3zzDNCwQkJoaSlUZcu1s/qypVqmIyZlOShsDAzjuHDfbYwTjh4sClL165dRRkA27dvJ8PwPy9QQKezZzNbUbOON27oVK6cv9Kj/HmfD0AIAdVoghEYPHiwVIN4U2wXwD11atDAL3Du3LlZesuWLRNpVaxo0PXr7luETZusfYCePe1hMuLy5VCiaUwlShh08aJ7WfbvNyg83F9pkEe4QXgZAM8995xI45NPQqk8t5Y9eviNHV+Mffv2CRvCUwHVaNIjgEgwGvMrRGefEjXRzHDgQPOzBz9VrVq1bl5rlJgYioJ1ql/fjBPs2tVDI0aghcmY6KyjryW/D1lmzw4l3xobtPB4eOeW63bJkiXiGTrC6LvY47i97N/frJjwOXLgqYBqOIHI8dJLL4kIx4wJpYCDc8EC8zstuyOaNQutJZw/34wvq1izZmiyrFxptpRly5al1NRUoVf42GJiYm6mEVrlSUlxzlOnPHT1qj2O4NSocWN/hcibN6/F4YmnAqrxBCKwYsUKodSyZQ26fDmUWhqcBw4Y5PNZnaM+n0a7d7tPKzVVp1KlzLgKFdIpPl6ztULBOGoURmGyPBqtW+e+sG/c0KhKFbPvtGDBAqF74OOPPxbPmjZ13xFPSDCocGGPY1aurLPBgRpPMO7caVBYmF8X9erVk02IhRBQjUclD1OlShWR6YUL3RewE6LjFxNj7UBj2OxWweDo0dZP3fTp7g0Bn8xKlUx52rcPTZZp00xZGjZsKKuf/vnnH4uPbdcud7o9eVKn++5zN0Px2WdudaFR06amHqZNm2bJA0IIqAakEkAEPLIGDUJr8p1Ro1deMZVfqJAR0kjn6FGvxU1QtarBjFUNlxHj401ZoqJ0Sk52L0tKikFFipiFoboJZB9b//7uC7pXL1NGdBPgH6xatapg7dq1pVG5Xxd+35kaV/pMTDQ/14888ghdvnxZNiEWSkA1INWYzp07Rw888ACLDM6tpCS3mcb3Wr/pnLM/UwknGs98qG6Czp3l1kmjVaucpS3z4EGD+Zp4PCNGhCKL56bT1h+H6iaAj427CQoWNOjMGXdy7tjhJcPwywhn6IkTJ+SiZUhLS6NHH31U6GL1anf5wOAAI2yeh8WLF6tJsJACqhGpBjVo0CARWbduoTX5I0f6KCHBmd9mwwZ/R7pCBZ3S0tynpboJWrcORWaN2rY1lQg3ATz69nDBuW+fTuHh5gyA6iZ49tlnRRruK4/ZSQYnT54sF6vAmDFjMqULyMXfh7yBgJACqhHJxrR3717hJsiTR6fjx93VIPD0aX9nrkcPZwo7d06nyEgvLV7sPi0oq1490xAiIjTW0beHC861a+XRoUZz5zqT3UqNWrY0CwMFy/UNfPfdd+JZKD62JUvMfFaoUIG1RHJ5AkeOHGH+rlB1gVkJzE7gfbSkaFHlPHAgtIBqSLJALVu2FEKPHRuKUj3Uu7dfqXXqOPt2X7umUUJCuOuaBH79tdVNMGSIOwX6qVGNGmZh1a7tTG6VK1aYslSrVk1WOQP6Iv40NFq2zJ2c166ZgxdU+E2bNqnRM3Tq1EnkY+hQ9+XXt6+pB0wJAbJ9cCC0gGpIPPDy5ctFZA89ZNCVK+6VumOHISZB8+QxWGulhglM98YEN0Hp0qYCihUz6MIFp+mZnDlTHmVqtH69+zgwAHj8cTOejh070uzZs2n69Ok0Y8YMeuONN8SzUObrJk70iffREZ8zZw598cUXLH6extixYzOli507veT1+lsnjEIxaS3biwy8IRDImPBbuXJlodRFi9xbN5TUpEnmO8dO+d571rRmzHAv84ULOhUtanbEO3RwX9jg1KmyUQZnmzY6xcZ66H//c8YBAzTKm9eds9a9LuAmMPWJtWiqrcjAGwKBDGrq1KkisoYNYQTulbp0qfXzA44f7zZjznjkiDmxDFarhnTct6hxcWbNz5VLv7kkxx4uGPFOWBgfGNx+Vqvmvvzgqfe/j+U6McyTr9qKDLwloAaCm6Bw4cIsMiyvSEpyr1QMNcuXt9dSzGW5zVzG1KhTJ2vrtHq1e5lVN4F/3ZU9XEY8eDCMZs2Konnz7gweOOAuH+jDYoTN9cDdBIEaHg68KaAGevvtt0VkWKMUigFMnGgaE4aalSpVYv+xOhMdSjV8ZrhxI4zJVMDLL4cis0Zt2lj7TomJztwc2Y2TJ5uVs3HjxgHtxJFBAVgUHxYWxiLLm1dna5TUBDPiqVMG5c/vL2CvFys5/6LXX3+dXWPZw5497mpMcGpUt67sJtDp0CH38aNvx5t4P3Vas+beMygMmgoU8OsTboI//vjDYiOODYqjRYsWQqnjxrkvGBQwdxOAffr0YfF+9NFH4t7MmaHEG5jz5lkNIS4ulLh11ucyjcnPKVPcV6a7nX36mHro1auXsI9AlIG3BfjDrHIT8I0AmArAFisAe8543P4lw+7jVpmaalDJkmbrhNEZRmlquIyIERA3ytKlS1N0dDT7X7ly1sh5t3D7drPsArkJVMpADBZcv35duAnQEcdkoJqgEzZubBawOhWAJQ/8Wb9+7kceMtEPa9vW2hFfuNB964TplKJFTZmxN7B169bium/f0EaLdxuxUFKer5s0aRIrM9WIHBsU9sPxyGrUCKOjRyPp8OFwx0xOjqDZs9H38ls4pgKuXbvG4uaJw5srbwR98kkvzZvno61bddq+HTUkfW7bhtYP4QyaM8dH1atbR5Dlyum0ZQvoccXevU15XnvtNSYnjIr3I8FGjby0aJGPtb7Jyfa8363EaHTzZp0mTPBR8eKmHrBKVp3GCUQZFoM6e/ascBOAWKYRHe2jiAjnjIyE/8YUaunSpSxuVQDsueOz635yf4lpHOkT8QcO7/WqYd0R811Hjx4VOlm0aBFFRERIYZAm5hjteb8biXyEh9v9hOXLl2fzf2rZBaIMYVB40LlzZ5uCM8Pnn39eJBRICGxpNteK3xmU13dzOdGiPvXUU7aw2ZEYjXfr1k0s61XLLRBlCIM6f/48denShZ0tgPmmzJDH8eeff7K4VQFUQX7++WcaOXIk9ejRg7p3727jq6++apEL/7GeCGcAYKJSDR8q+/XrJ9Z3B5IT2+1hcHB9ZIWe7gQiHyDyj2mVnTt3ivyq5ZUeZdj6UFkNNXGVdyJUGe9UOW8l1PwHowyLQakBc5hDJ5SRY1A5zDRl3HMGFSi/8nWg//K9QPcB9X6gNNO75wTyu+o7ge4HuhfomfpcfeaEMu4Zg5IB560K3JPDqe9kBVRZ0kvD7X0g0LNA9zgyeuaGMu4pg8JKSWwnwklsOAEPB1JgSQYO5OBrpDHarF+/PvPJwcEJxyzCtmvXjp2DBWDUiXtYHwSOGDGCTZ5imxKuEd+wYcOYU/Dw4cP0xBNPiHOfAGxQwNkFmNc8cOAA1alTR8QF/w+mp8aNG8dmLLBLpUmTJvT999+zdzEKHT16NJMLp9m9+OKLbL0/B0a/mIk4dOgQu8YRinDfIF68gx3fq1atEuGx7b1Ro0ZsexVcOAsXLmT3Vf0Fo4x7wqCAiRMnMj9L7969WYG88MILrGDLlCnDtoZduXKFzTciDIbRv/zyC/vftGlTatOmDfsPQ8JeOvyHzw7xxMbGsjOS+Jp7FOjDDz/M/iMsDJSnC8DA+FbzLVu2MFeNz+dj4cAhQ4Yw48Y9LPWBTwhhcbIdNoJiTTqucYwONooWKlRInMkp+xH56oCEhAR2DUPiE/65cuVi+cVRSbiGAUJu/MfMQEZzdyplZHuD4kDthMKGDx/OChXgu03QcgG88NFqPP300/Tggw+y+5iCwf3x48ezlgr/MQOPlglGiT1wuAcDA9Cy4Xrjxo10//33s/8w0uTkZCpevDi7RquDgsN/zE4grg8++IC9j1NtMI/KD7HFNBWMAQaN8PKhrvwoHRgiKgZWdeDd/fv3s/toxWDAHMgXjBXrzREX3uOATLgnH/LmhDLuGYNau3at5YgcGAlqOAoYQI3F6gJ8QrAWDGEw5cK33Tdr1oydiIsaXLduXeY5x4lzMIq+ffuyMPic4rOBKaW5c+eyiVUYA+4XK1aMGShvYXCyLowIhYu48VmEYxWfqHz58rEw+FRBPlSGH3/8kRkKDm5V8emnn7Lw77zzDosD4S5cuMCmvXAfnzUA69GQHioF0kT+OFApcI0zuDhUXaZHGdneoNCPwQEUK1euZLWWH9+4Zs0a9ovCwucNnzZcYx4PrQmMgnvhZ82axfTDtyKhP4P+18GDB1kLhUKCcT722GPs+Q8//MDC49OCFoMfgIEWCC0NTlxBHw3THOhv4fO0detW1trw9WI8LbQw2O7NW0l8njBlhc8V4uWtbNGiRVlYyA0j/vvvv5nhowLAsLA3AK0lWkP0r9AHhOF98803LA7smIEh8/6YqsdglJGtDQpAR1qe3IXioESAGxEvEKwDg4HgGjVdBownKiqKFRif1MZOamzaRMGgAFHQeIYJZRBhUEAwGBwdiU8pwqKDzjd/8NUMMMrExES2R69mzZosTfTzYJQwvn///Ze1WFxetKZYlou9ePj8omVDGLRguIfPOAwWRHjI1bx5cyYDgFZN1gtaWz7touoxI8q45VMvtxtwB6A5Ryv066+/MqVzQBm4h8lffPIA9FswB8mvObBhAwdrwUDwHP8x4kJ/jPdX0BriOYwLLZ18shuACVd8TgH0pxAW14gLBY2WCMaHtAAui3zkIAYAmFPE3CvC7dq1SzwD8AmGPKgYeBdpgIEOrUclQUutypkZZHuDysF/ixyDykGW4v8l46XJTQiPdgAAAABJRU5ErkJggg==" alt="Rede Nilo" style="height:64px;width:auto;margin:0 auto 14px;display:block">
+      <h2 style="margin:0;font-size:20px;color:var(--navy);letter-spacing:.02em">PAINEL DE TELEVENDAS</h2>
+      <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Rede Nilo — acesso restrito</p>
+    </div>
+    <div class="auth-error" id="loginError"></div>
+    <div class="auth-field"><label>Usuário</label><input id="loginUsuario" autocomplete="username"></div>
+    <div class="auth-field"><label>Senha</label><input id="loginSenha" type="password" autocomplete="current-password"></div>
+    <button class="auth-submit" onclick="doLogin()">Entrar</button>
+    <div class="auth-links">
+      <a onclick="showAuthCard('authCardForgot')">Esqueci minha senha</a>
+      <a onclick="showAuthCard('authCardRegister')">Cadastrar novo usuário</a>
+    </div>
+  </div>
+
+  <!-- CADASTRO -->
+  <div class="auth-card" id="authCardRegister" style="display:none">
+    <div class="auth-brand"><div class="brand-mark">N</div><div><h2>Cadastrar usuário</h2><p>Seu acesso precisa ser autorizado por um administrador</p></div></div>
+    <div class="auth-error" id="registerError"></div>
+    <div class="auth-success" id="registerSuccess"></div>
+    <div class="auth-field"><label>Nome completo</label><input id="regNome"></div>
+    <div class="auth-field"><label>Telefone</label><input id="regTelefone" placeholder="(66) 99999-9999"></div>
+    <div class="auth-field"><label>E-mail</label><input id="regEmail" type="email"></div>
+    <div class="auth-field"><label>Usuário</label><input id="regUsuario" autocomplete="username"></div>
+    <div class="auth-field"><label>Senha</label><input id="regSenha" type="password" autocomplete="new-password"></div>
+    <div class="auth-field"><label>Confirmar senha</label><input id="regSenhaConfirm" type="password" autocomplete="new-password"></div>
+    <button class="auth-submit" onclick="doRegister()">Cadastrar</button>
+    <div class="auth-links"><a onclick="showAuthCard('authCardLogin')">← Voltar para o login</a><span></span></div>
+  </div>
+
+  <!-- 2FA -->
+  <div class="auth-card" id="authCard2FA" style="display:none">
+    <div class="auth-brand"><div class="brand-mark">N</div><div><h2>Verificação em duas etapas</h2><p>Enviamos um código para o seu e-mail cadastrado</p></div></div>
+    <div class="auth-error" id="twofaError"></div>
+    <div class="auth-field"><label>Código de 6 dígitos</label><input id="twofaCode" maxlength="6" placeholder="000000" style="text-align:center;font-size:20px;letter-spacing:4px;font-weight:800"></div>
+    <button class="auth-submit" onclick="doVerify2FA()">Confirmar</button>
+    <div class="auth-links"><a onclick="showAuthCard('authCardLogin')">← Voltar para o login</a><span></span></div>
+  </div>
+
+  <!-- ESQUECI SENHA -->
+  <div class="auth-card" id="authCardForgot" style="display:none">
+    <div class="auth-brand"><div class="brand-mark">N</div><div><h2>Redefinir senha</h2><p>Enviaremos um link para o e-mail cadastrado</p></div></div>
+    <div class="auth-error" id="forgotError"></div>
+    <div class="auth-success" id="forgotSuccess"></div>
+    <div class="auth-field"><label>Usuário</label><input id="forgotUsuario"></div>
+    <button class="auth-submit" onclick="doForgotPassword()">Enviar link de redefinição</button>
+    <div class="auth-links"><a onclick="showAuthCard('authCardLogin')">← Voltar para o login</a><span></span></div>
+  </div>
+
+  <!-- DEFINIR NOVA SENHA (via link do e-mail) -->
+  <div class="auth-card" id="authCardReset" style="display:none">
+    <div class="auth-brand"><div class="brand-mark">N</div><div><h2>Definir nova senha</h2><p>Escolha uma nova senha de acesso</p></div></div>
+    <div class="auth-error" id="resetError"></div>
+    <div class="auth-field"><label>Nova senha</label><input id="resetSenha" type="password"></div>
+    <div class="auth-field"><label>Confirmar nova senha</label><input id="resetSenhaConfirm" type="password"></div>
+    <button class="auth-submit" onclick="doResetPassword()">Salvar nova senha</button>
+    <div class="auth-links"><a onclick="showAuthCard('authCardLogin')">← Voltar para o login</a><span></span></div>
+  </div>
+
+  <div class="auth-card" id="authCardStoreSelect" style="display:none">
+    <div class="auth-brand"><div class="brand-mark">N</div><div><h2>Selecione a loja</h2><p>Escolha qual loja deseja acompanhar</p></div></div>
+    <div id="storeSelectList" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div class="auth-links"><a onclick="doLogout()">← Sair</a><span></span></div>
+  </div>
+</div>
+
+<div class="app" id="mainApp" style="display:none">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div><h1>Painel de Televendas</h1><p>Kanban operacional, SLA e cronoanálise — Rede Nilo</p></div>
+    </div>
+    <div class="header-actions">
+      <div class="sync" id="syncStatus">Conectando à planilha...</div>
+      <div class="clock" id="liveClock">--:--:--</div>
+      <div class="sync" id="userBadge" style="font-weight:800"></div>
+      <button class="btn btn-outline btn-sm" id="storeSwitchBtn" style="display:none" onclick="openStoreSwitcher()">🏬 Trocar loja</button>
+      <button class="btn btn-light" onclick="openClientModal()">＋ Cadastrar cliente</button>
+      <button class="btn btn-primary" onclick="openOrderModal()">＋ Novo pedido</button>
+      <button class="btn btn-dark" id="adminPanelBtn" style="display:none" onclick="openAdminPanel()">🛡 Painel administrativo</button>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="toolbar">
+      <div class="field"><label>Data inicial</label><input type="date" id="dateStart" onchange="renderAll()"></div>
+      <div class="field"><label>Data final</label><input type="date" id="dateEnd" onchange="renderAll()"></div>
+      <div class="quick-filters">
+        <button class="btn btn-outline btn-sm" onclick="setQuickDate('today')">Hoje</button>
+        <button class="btn btn-outline btn-sm" onclick="setQuickDate('yesterday')">Ontem</button>
+        <button class="btn btn-outline btn-sm" onclick="setQuickDate('7days')">Últimos 7 dias</button>
+        <button class="btn btn-danger btn-sm" onclick="clearFilters()">✕ Limpar filtros</button>
+      </div>
+      <div class="toolbar-spacer"></div>
+      <div class="sla-toolbar">
+        <div class="daily-sla-display" id="dailySlaDisplay"><div class="daily-label">SLA do dia</div><div class="daily-value">Carregando...</div></div>
+        <button class="btn btn-outline" type="button" onclick="openDailySlaModal()">⏱ Cadastrar SLA do dia</button>
+      </div>
+      <button class="btn btn-dark" onclick="exportExcel()">⬇ Exportar Excel</button>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-view="dashboard" onclick="switchView('dashboard',this)">Dashboard</button>
+      <button class="tab" data-view="kanban" onclick="switchView('kanban',this)">Kanban</button>
+      <button class="tab" data-view="analysis" onclick="switchView('analysis',this)">Cronoanálise</button>
+      <button class="tab" data-view="separation" onclick="switchView('separation',this)">Separação</button>
+      <button class="tab" data-view="occurrences" onclick="switchView('occurrences',this)">Ocorrência</button>
+      <button class="tab" data-view="clients" onclick="switchView('clients',this)">Clientes</button>
+      <button class="tab" data-view="clients-inactive" onclick="switchView('clients-inactive',this)">Clientes sem vendas</button>
+    </nav>
+
+    <section class="view active" id="view-dashboard">
+      <div class="kpis" id="kpiGrid"></div>
+      <div class="panel" style="margin-bottom:18px">
+        <h2>Tempos médios por etapa</h2><p class="hint">Cálculo baseado nos pedidos do período selecionado que possuem os horários necessários.</p>
+        <div class="stage-grid" id="stageMetrics"></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel"><h2>Pedidos recebidos por hora</h2><p class="hint">Distribuição conforme horário de entrada.</p><div class="chart-bars" id="hourChart"></div></div>
+        <div class="panel"><h2>Distribuição por etapa</h2><p class="hint">Posição atual dos pedidos no fluxo.</p><div class="status-list" id="statusChart"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-kanban">
+      <p class="hint" id="kanbanHint" style="margin-bottom:12px">Mostrando pedidos pendentes + concluídos de hoje. Use os filtros de data acima para ver pedidos concluídos de outros dias.</p>
+      <div class="kanban-wrap"><div class="kanban" id="kanbanBoard"></div></div>
+    </section>
+
+    <section class="view" id="view-analysis">
+      <div class="panel" style="margin-bottom:18px">
+        <h2>Pedidos diários — total x entregues</h2>
+        <p class="hint">Comparativo por dia dentro do período filtrado. Barra clara = total de pedidos recebidos no dia; barra escura = quantos desses já foram entregues/retirados (Cliente recebeu).</p>
+        <div class="chart-bars" id="dailyOrdersChart" style="height:230px"></div>
+        <div style="display:flex;gap:18px;margin-top:10px;font-size:11px;color:var(--muted)">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#c7ccd4;margin-right:5px"></span>Total de pedidos</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--navy);margin-right:5px"></span>Entregues / retirados</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Relatório de cronoanálise</h2>
+        <p class="hint"><b>Padrão de leitura:</b> durações em horas, minutos e segundos — ex.: <b>01h 11min 00s</b>. O <b>tempo médio por item</b> é a separação dividida pela quantidade de itens.</p>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>Pedido</th><th>Cliente</th><th>Separador</th><th>Itens</th><th>Recebido</th><th>Início separação</th><th>Fim coleta</th><th>Checkout</th><th>Saída</th><th>Recebido pelo cliente</th>
+          <th>Espera separação</th><th>Separação</th><th>Média / item</th><th>Coleta→checkout</th><th>Checkout→saída</th><th>Saída→recebimento</th><th>Ciclo total</th><th>SLA aplicável</th><th>Resultado</th>
+        </tr></thead><tbody id="analysisBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-separation">
+      <div class="panel" style="margin-bottom:18px">
+        <h2>⏱ Acompanhamento em tempo real</h2>
+        <p class="hint">Pedidos que estão sendo separados agora, com o progresso de itens marcados por cada separador (atualiza automaticamente).</p>
+        <div id="liveSeparationList" style="display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+      <div class="toolbar" style="margin-bottom:18px">
+        <div class="field"><label>Separador</label><select id="separationFilter" onchange="renderSeparation()"><option value="">Todos</option></select></div>
+      </div>
+      <div class="kpis" id="separationKpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px"></div>
+      <div class="grid-2">
+        <div class="panel"><h2>Ranking por tempo de separação</h2><p class="hint">Tempo total em separação por separador, no período filtrado.</p><div class="status-list" id="separationTimeChart"></div></div>
+        <div class="panel"><h2>Ranking por quantidade de itens</h2><p class="hint">Itens separados por separador, no período filtrado.</p><div class="status-list" id="separationItemsChart"></div></div>
+      </div>
+      <div class="panel">
+        <h2>Ranking de separadores</h2>
+        <p class="hint">Baseado nos pedidos do período com separação concluída (início e fim registrados). Ritmo = soma de itens ÷ tempo total em separação — exibido em itens/min quando o tempo total for menor que 1h (fica mais fácil de ler), ou em itens/h quando passar de 1h.</p>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>#</th><th>Separador</th><th>Pedidos</th><th>Itens separados</th><th>Tempo total em separação</th><th>Ritmo (itens/min ou /h)</th><th>Tempo médio / item</th>
+        </tr></thead><tbody id="separationBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-occurrences">
+      <div class="toolbar">
+        <div class="field"><label>Data inicial</label><input type="date" id="occDateStart" onchange="renderOccurrences()"></div>
+        <div class="field"><label>Data final</label><input type="date" id="occDateEnd" onchange="renderOccurrences()"></div>
+        <div class="field"><label>Tipo de ocorrência</label><select id="occFilterType" onchange="renderOccurrences()"><option value="">Todos</option></select></div>
+        <div class="field"><label>Setor</label><select id="occFilterSector" onchange="renderOccurrences()"><option value="">Todos</option></select></div>
+        <div class="field"><label>Cliente</label><select id="occFilterClient" onchange="renderOccurrences()"><option value="">Todos</option></select></div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-primary" onclick="openOccurrenceModal()">＋ Registrar ocorrência</button>
+      </div>
+
+      <div class="kpis" id="occKpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px"></div>
+
+      <div class="grid-2">
+        <div class="panel"><h2>Ocorrências por tipo</h2><p class="hint">Distribuição no período filtrado.</p><div class="status-list" id="occTypeChart"></div></div>
+        <div class="panel"><h2>Ocorrências por setor de origem</h2><p class="hint">Onde o erro se originou.</p><div class="status-list" id="occSectorChart"></div></div>
+      </div>
+
+      <div class="panel" style="margin-bottom:18px">
+        <h2>Clientes mais afetados</h2>
+        <p class="hint">Ranking de clientes com mais ocorrências registradas no período.</p>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Cliente</th><th>Ocorrências</th><th>Tipo mais comum</th></tr></thead><tbody id="occClientRanking"></tbody></table></div>
+      </div>
+
+      <div class="panel">
+        <h2>Registro de ocorrências</h2>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>Data</th><th>Cliente</th><th>Pedido</th><th>Tipo</th><th>Responsável</th><th>Setor</th><th>Descrição</th><th>Ações</th>
+        </tr></thead><tbody id="occurrencesBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-clients">
+      <div class="kpis" id="clientKpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px"></div>
+      <div class="panel">
+        <div class="client-tools">
+          <div><h2>Cadastro de clientes</h2><p class="hint" style="margin-bottom:0">Base sincronizada com a planilha Google Sheets. Filtro de data usa o campo "Data inicial/final" do topo, com base na data de cadastro.</p></div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <label id="viewAllStoresLabel" style="display:none;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><input type="checkbox" id="viewAllStoresClients" onchange="renderClients()" style="width:15px;height:15px">Ver clientes de todas as lojas</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><input type="checkbox" id="onlyNewClients" onchange="renderClients()" style="width:15px;height:15px">Somente clientes novos</label>
+            <input class="search" id="clientSearch" placeholder="Pesquisar cliente, telefone, bairro ou código..." oninput="renderClients()">
+            <button class="btn btn-dark btn-sm" onclick="exportNewClientsExcel()">⬇ Relatório de clientes novos</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table class="data-table" style="min-width:1100px"><thead><tr><th>Código</th><th>Cliente</th><th>Telefone</th><th>Tipo</th><th>Bairro</th><th>Cidade</th><th>Endereço</th><th id="clientsLojaHeader" style="display:none">Loja</th><th>Novo</th><th>Cadastrado em</th><th>Ações</th></tr></thead><tbody id="clientsBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-clients-inactive">
+      <div class="toolbar">
+        <div class="field"><label>Considerar sem venda a partir de (dias)</label><input type="number" id="inactiveDaysThreshold" min="1" value="15" onchange="renderInactiveClients()"></div>
+        <label id="viewAllStoresInactiveLabel" style="display:none;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px"><input type="checkbox" id="viewAllStoresInactive" onchange="renderInactiveClients()" style="width:15px;height:15px">Ver todas as lojas</label>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-dark" onclick="exportInactiveClientsExcel()">⬇ Exportar Excel</button>
+      </div>
+      <div class="kpis" id="inactiveClientsKpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px"></div>
+      <div class="panel">
+        <h2>Clientes sem vendas</h2>
+        <p class="hint">Só considera <b>venda concluída</b> (pedido que chegou até "Cliente recebeu") — a data usada é a da entrega, não a de criação do pedido. Não usa o filtro de data do topo. "Nunca comprou" aparece para clientes sem nenhuma venda concluída. Dias sem comprar calculados a partir de <b>10/08/2026</b>.</p>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>Cliente</th><th>Telefone</th><th id="inactiveLojaHeader" style="display:none">Loja</th><th>Última compra (entrega)</th><th>Dias sem comprar</th><th>Vendas concluídas</th>
+        </tr></thead><tbody id="inactiveClientsBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <div class="footer-note">Dados sincronizados com o Google Sheets. Utilize a exportação em Excel para arquivamento histórico.</div>
+  </main>
+</div>
+
+<div class="app" id="separatorApp" style="display:none">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div><h1>Painel do Separador</h1><p id="separatorHeaderSub">Seus pedidos em separação</p></div>
+    </div>
+    <div class="header-actions">
+      <div class="sync" id="separatorSyncStatus">Conectando à planilha...</div>
+      <div class="clock" id="separatorClock">--:--:--</div>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </header>
+  <main class="main">
+    <div class="kpis" id="separatorKpis" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:18px"></div>
+    <div id="separatorOrdersList" style="display:flex;flex-direction:column;gap:16px"></div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="sepEditItemModal">
+  <div class="modal" style="width:min(420px,100%)">
+    <div class="modal-head"><h3>Editar item</h3><button type="button" class="close" onclick="closeModal('sepEditItemModal')">×</button></div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:12px"><label>Quantidade</label><input id="sepEditItemQtd" placeholder="Ex.: 24 UND"></div>
+      <div class="field"><label>Descrição do produto *</label><input id="sepEditItemTexto"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-danger" onclick="removeSepItem()">Remover item</button>
+      <button type="button" class="btn btn-outline" onclick="closeModal('sepEditItemModal')">Cancelar</button>
+      <button type="button" class="btn btn-primary" onclick="saveSepItemEdit()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="sepFinishConfirmModal">
+  <div class="modal" style="width:min(460px,100%)">
+    <div class="modal-head"><h3>⚠️ Itens ainda não separados</h3><button type="button" class="close" onclick="closeModal('sepFinishConfirmModal')">×</button></div>
+    <div class="modal-body">
+      <p style="margin:0 0 12px;font-size:14px">Faltam <b id="sepFinishPendingCount">0</b> item(ns) marcar como separado(s) neste pedido:</p>
+      <ul id="sepFinishPendingList" style="margin:0 0 16px;padding-left:18px;font-size:13px;color:var(--muted);max-height:180px;overflow:auto"></ul>
+      <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;font-weight:700;background:#fff8db;border:1px solid #f5dd8a;border-radius:10px;padding:12px">
+        <input type="checkbox" id="sepFinishAckCheckbox" style="width:18px;height:18px;margin-top:2px">
+        Estou ciente de que existem itens não marcados como separados e quero finalizar assim mesmo.
+      </label>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('sepFinishConfirmModal')">Voltar e conferir</button><button type="button" class="btn btn-primary" id="sepFinishConfirmBtn" disabled>Finalizar mesmo assim</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="orderModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Cadastrar novo pedido</h3><button type="button" class="close" onclick="closeModal('orderModal')">×</button></div>
+    <div class="modal-body">
+      <div class="note">Selecione o cliente. Colar a mensagem do WhatsApp é opcional, mas ajuda na conferência.</div>
+      <div class="form-grid">
+        <div class="field span-2"><label>Cliente *</label><select id="orderClient"></select></div>
+        <div class="field"><label>Modalidade *</label><select id="orderType"><option value="Entrega">Entrega</option><option value="Retirada">Retirada</option></select></div>
+        <div class="field"><label>Prioridade</label><select id="orderPriority"><option value="Normal">Normal</option><option value="Urgente">Urgente</option></select></div>
+        <div class="field"><label>Quantidade de itens *</label><input type="number" id="orderItemCount" min="1" step="1" value="1"></div>
+        <div class="field"><label>Separador (opcional)</label><select id="orderSeparator" onchange="onOrderSeparatorChange()"></select></div>
+        <div class="field" id="orderNewSeparatorField" style="display:none"><label>Novo separador</label><input id="orderNewSeparator" placeholder="Nome do novo separador"></div>
+        <div class="field span-2">
+          <label>Anexar pedido (Word, PDF, Excel, TXT...) — opcional</label>
+          <input type="file" id="orderFileUpload" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" onchange="handleOrderFileUpload(event)">
+          <span id="orderFileStatus" style="font-size:11px;color:var(--muted);margin-top:4px"></span>
+        </div>
+        <div class="field span-2"><label>Pedido recebido pelo WhatsApp (opcional)</label><textarea id="orderOriginalText" rows="10" placeholder="Cole aqui a mensagem completa do cliente, se houver."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('orderModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveOrder()">Salvar pedido</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="clientModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="clientModalTitle">Cadastrar cliente</h3><button type="button" class="close" onclick="closeModal('clientModal')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="clientEditId">
+      <div class="form-grid">
+        <div class="field span-2"><label>Nome ou razão social *</label><input id="clientName"></div>
+        <div class="field"><label>Telefone *</label><input id="clientPhone" placeholder="(66) 99999-9999"></div>
+        <div class="field"><label>Tipo *</label><select id="clientType"><option value="" disabled selected>Selecione opção...</option><option value="Pessoa física">Pessoa física</option><option value="Empresa">Empresa</option></select></div>
+        <div class="field"><label>Bairro</label><input id="clientDistrict"></div>
+        <div class="field"><label>Cidade</label><input id="clientCity" value="Barra do Garças - MT"></div>
+        <div class="field span-2"><label>Endereço</label><input id="clientAddress"></div>
+        <div class="field span-2" style="flex-direction:row;align-items:center;gap:8px">
+          <input type="checkbox" id="clientIsNew" style="width:16px;height:16px">
+          <label for="clientIsNew" style="margin:0">Cliente novo (primeira compra)</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('clientModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveClient()">Salvar cliente</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="detailModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Detalhes e correção de horários</h3><button type="button" class="close" onclick="closeModal('detailModal')">×</button></div>
+    <div class="modal-body" id="detailContent"></div>
+    <div class="modal-foot"><button type="button" class="btn btn-danger" id="deleteOrderBtn">Excluir pedido</button><button type="button" class="btn btn-outline" onclick="closeModal('detailModal')">Fechar</button><button type="button" class="btn btn-primary" id="saveTimesBtn">Salvar alterações</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="itemsModal">
+  <div class="modal modal-wide">
+    <div class="modal-head"><h3>Pedido e alterações</h3><button type="button" class="close" onclick="closeModal('itemsModal')">×</button></div>
+    <div class="modal-body">
+      <section class="original-order-box">
+        <h4>Pedido original recebido pelo WhatsApp</h4>
+        <pre class="whatsapp-order" id="originalOrderText"></pre>
+      </section>
+      <h4>Registrar substituição / cancelamento / inclusão</h4>
+      <div class="form-grid">
+        <div class="field"><label>Tipo</label><select id="changeType"><option value="Substituição">Substituição</option><option value="Cancelamento">Cancelamento</option><option value="Inclusão">Inclusão</option></select></div>
+        <div class="field"><label>Quantidade</label><input id="changeQty" placeholder="Ex.: 2 UN"></div>
+        <div class="field"><label>Produto original</label><input id="changeOriginal"></div>
+        <div class="field"><label>Produto resultado</label><input id="changeResult"></div>
+        <div class="field span-2"><label>Motivo / observação</label><input id="changeReason"></div>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button type="button" class="btn btn-primary btn-sm" onclick="addChange()">＋ Registrar alteração</button></div>
+      <table class="changes-table"><thead><tr><th>Data</th><th>Tipo</th><th>Qtd</th><th>Original</th><th>Resultado</th><th>Motivo</th></tr></thead><tbody id="changesBody"></tbody></table>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('itemsModal')">Fechar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="assignmentModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Separador e SLA do pedido</h3><button type="button" class="close" onclick="closeModal('assignmentModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field span-2"><label>Separador *</label><select id="assignmentSeparator" onchange="onAssignmentSeparatorChange()"></select></div>
+        <div class="field span-2" id="assignmentNewSeparatorField" style="display:none"><label>Novo separador</label><input id="assignmentNewSeparator" placeholder="Nome do novo separador"></div>
+        <div class="field"><label>Quantidade de itens *</label><input type="number" id="assignmentItemCount" min="1" step="1"></div>
+        <div class="field"><label>SLA — horas *</label><input type="number" id="assignmentSlaHours" min="0" step="1"></div>
+        <div class="field"><label>SLA — minutos *</label><input type="number" id="assignmentSlaMinutes" min="0" max="59" step="1"></div>
+        <div class="field span-2"><label>Observação</label><input id="assignmentNote"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('assignmentModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveAssignment()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="dailySlaModal">
+  <div class="modal">
+    <div class="modal-head"><h3>SLA do dia</h3><button type="button" class="close" onclick="closeModal('dailySlaModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>Data</label><input type="date" id="dailySlaDate"></div>
+        <div class="field"><label>SLA padrão (minutos)</label><input type="number" id="dailySlaMinutes" min="0" step="1"></div>
+        <div class="field span-2"><label>Observação</label><input id="dailySlaNote"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('dailySlaModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveDailySla()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="occurrenceModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Registrar ocorrência</h3><button type="button" class="close" onclick="closeModal('occurrenceModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field span-2"><label>Cliente *</label><select id="occClient"></select></div>
+        <div class="field"><label>Data *</label><input type="date" id="occDate"></div>
+        <div class="field"><label>Pedido relacionado (opcional)</label><select id="occOrder"><option value="">Nenhum</option></select></div>
+        <div class="field"><label>Tipo de ocorrência *</label><select id="occType" onchange="onOccTypeChange()"></select></div>
+        <div class="field" id="occNewTypeField" style="display:none"><label>Novo tipo de ocorrência</label><input id="occNewType" placeholder="Descreva o novo tipo"></div>
+        <div class="field"><label>Nome do responsável (origem do erro) *</label><input id="occName" placeholder="Ex.: João Pereira"></div>
+        <div class="field"><label>Setor de origem *</label><select id="occSector" onchange="onOccSectorChange()"></select></div>
+        <div class="field" id="occNewSectorField" style="display:none"><label>Novo setor de origem</label><input id="occNewSector" placeholder="Descreva o novo setor"></div>
+        <div class="field span-2"><label>Descrição / observação</label><textarea id="occDescription" rows="4" placeholder="Detalhe o que ocorreu."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('occurrenceModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveOccurrence()">Salvar ocorrência</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="whatsappConfirmModal">
+  <div class="modal" style="width:min(420px,100%)">
+    <div class="modal-head"><h3>Notificar cliente</h3><button type="button" class="close" onclick="closeModal('whatsappConfirmModal')">×</button></div>
+    <div class="modal-body">
+      <p id="whatsappConfirmText" style="margin:0;font-size:14px;color:var(--text)"></p>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('whatsappConfirmModal')">Não</button><button type="button" class="btn btn-primary" id="whatsappConfirmYesBtn">Sim, enviar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="adminPanelModal">
+  <div class="modal modal-wide" style="width:min(1100px,100%)">
+    <div class="modal-head"><h3>🛡 Painel administrativo</h3><button type="button" class="close" onclick="closeModal('adminPanelModal')">×</button></div>
+    <div class="modal-body">
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-admintab="users" onclick="switchAdminTab('users',this)">Usuários</button>
+        <button class="admin-tab" data-admintab="lojas" onclick="switchAdminTab('lojas',this)">Lojas</button>
+        <button class="admin-tab" data-admintab="logs" onclick="switchAdminTab('logs',this)">Log de acessos</button>
+      </div>
+
+      <div id="adminTabUsers">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-primary btn-sm" onclick="openAdminCreateUser()">＋ Novo usuário</button></div>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>Nome</th><th>Usuário</th><th>Telefone</th><th>E-mail</th><th>Perfil</th><th>Lojas</th><th>Status</th><th>Criado em</th><th>Último acesso</th><th>Ações</th>
+        </tr></thead><tbody id="adminUsersBody"></tbody></table></div>
+      </div>
+
+      <div id="adminTabLojas" style="display:none">
+        <div class="form-grid" style="margin-bottom:14px;align-items:end">
+          <div class="field"><label>Nome da nova loja</label><input id="newLojaNome" placeholder="Ex.: Rede Nilo — Barra do Garças"></div>
+          <button class="btn btn-primary" onclick="confirmCreateLoja()">＋ Criar loja</button>
+        </div>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Nome</th><th>Status</th><th>Criada em</th><th>Ações</th></tr></thead><tbody id="adminLojasBody"></tbody></table></div>
+      </div>
+
+      <div id="adminTabLogs" style="display:none">
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>Data</th><th>Usuário</th><th>Resultado</th><th>Detalhe</th>
+        </tr></thead><tbody id="adminLogsBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('adminPanelModal')">Fechar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="adminEditLojaModal">
+  <div class="modal" style="width:min(420px,100%)">
+    <div class="modal-head"><h3>Editar loja</h3><button type="button" class="close" onclick="closeModal('adminEditLojaModal')">×</button></div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:12px"><label>Nome da loja *</label><input id="editLojaNome"></div>
+      <div class="field" style="margin-bottom:12px"><label>Status</label><select id="editLojaStatus"><option value="Ativa">Ativa</option><option value="Inativa">Inativa</option></select></div>
+      <div class="field"><label>Ordem de exibição</label><input type="number" id="editLojaOrdem" min="1" step="1"></div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('adminEditLojaModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="confirmEditLoja()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="adminResetPasswordModal">
+  <div class="modal" style="width:min(420px,100%)">
+    <div class="modal-head"><h3>Redefinir senha</h3><button type="button" class="close" onclick="closeModal('adminResetPasswordModal')">×</button></div>
+    <div class="modal-body">
+      <p class="hint" id="adminResetPasswordUserLabel" style="margin-top:0"></p>
+      <div class="field" style="margin-bottom:12px"><label>Nova senha</label><input type="password" id="adminResetPasswordValue" placeholder="Mínimo 6 caracteres"></div>
+      <div class="field"><label>Confirmar nova senha</label><input type="password" id="adminResetPasswordConfirm"></div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('adminResetPasswordModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="confirmAdminResetPassword()">Salvar nova senha</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="adminCreateUserModal">
+  <div class="modal" style="width:min(480px,100%)">
+    <div class="modal-head"><h3>Novo usuário</h3><button type="button" class="close" onclick="closeModal('adminCreateUserModal')">×</button></div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:12px"><label>Nome completo *</label><input id="newUserNome"></div>
+      <div class="form-grid">
+        <div class="field"><label>Usuário *</label><input id="newUserUsuario"></div>
+        <div class="field"><label>Perfil *</label><select id="newUserPerfil"><option value="Colaborador">Colaborador</option><option value="Separador">Separador</option><option value="Master">Master</option></select></div>
+        <div class="field"><label>Telefone</label><input id="newUserTelefone"></div>
+        <div class="field"><label>E-mail</label><input id="newUserEmail" type="email"></div>
+        <div class="field"><label>Senha *</label><input id="newUserSenha" type="password"></div>
+        <div class="field"><label>Confirmar senha *</label><input id="newUserSenhaConfirm" type="password"></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-weight:700;margin-top:6px">
+        <input type="checkbox" id="newUserAtivarImediatamente" checked style="width:15px;height:15px">
+        Ativar imediatamente (sem precisar autorizar depois)
+      </label>
+      <div class="field" style="margin-top:12px">
+        <label>Lojas autorizadas (deixe em branco para perfil Master, que já enxerga todas)</label>
+        <div id="newUserLojasList" style="display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:9px;padding:10px;max-height:140px;overflow:auto"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('adminCreateUserModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="confirmAdminCreateUser()">Criar usuário</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="adminEditUserModal">
+  <div class="modal" style="width:min(480px,100%)">
+    <div class="modal-head"><h3>Editar usuário</h3><button type="button" class="close" onclick="closeModal('adminEditUserModal')">×</button></div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:12px"><label>Nome completo *</label><input id="editUserNome"></div>
+      <div class="form-grid">
+        <div class="field"><label>Usuário *</label><input id="editUserUsuario"></div>
+        <div class="field"><label>Perfil *</label><select id="editUserPerfil"><option value="Colaborador">Colaborador</option><option value="Separador">Separador</option><option value="Master">Master</option></select></div>
+        <div class="field"><label>Telefone</label><input id="editUserTelefone"></div>
+        <div class="field"><label>E-mail</label><input id="editUserEmail" type="email"></div>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Lojas autorizadas</label>
+        <div id="editUserLojasList" style="display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:9px;padding:10px;max-height:140px;overflow:auto"></div>
+      </div>
+      <p class="hint" style="margin-top:10px;margin-bottom:0">Para trocar a senha, use o botão "Redefinir senha" na tabela.</p>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('adminEditUserModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="confirmAdminEditUser()">Salvar alterações</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+// ===== CONFIGURAÇÃO — cole aqui a URL do Web App do Apps Script (termina em /exec) =====
+const API_URL = 'https://script.google.com/macros/s/AKfycbw6GDFuPqeT92xPqcWBNB3vPU2M7hGqKCt2NuT0EKTFRlsF11Q5oyVpydapTq0Ks1BE/exec';
+
+const stages=[
+  {key:'RecebidoEm',title:'Pedido recebido',short:'Recebido',color:'#2962b8'},
+  {key:'InicioSeparacao',title:'Em separação',short:'Separação',color:'#7b4eb2'},
+  {key:'FimColeta',title:'Coleta finalizada',short:'Coleta concluída',color:'#dc7b14'},
+  {key:'CheckoutFinalizado',title:'Checkout finalizado',short:'Checkout',color:'#b0578d'},
+  {key:'SaidaLoja',title:'Saiu da loja',short:'Expedição / retirada',color:'#148a92'},
+  {key:'ClienteRecebeu',title:'Cliente recebeu',short:'Entregue',color:'#17834f'}
+];
+
+let clients=[], orders=[], changes=[], dailySlas=[], occurrences=[], occurrenceTypes=[], occurrenceSectors=[], separatorsList=[];
+let selectedDetailId=null, selectedItemsOrderId=null, selectedAssignmentOrderId=null;
+let pendingSaveIds = new Set(); // pedidos/clientes criados localmente ainda sem confirmação de gravação na planilha
+let suppressAutoRefreshUntil = 0;
+let currentSession = null; // {token, id, nome, usuario, perfil, lojasAutorizadas, loja}
+let allLojasCache = [];
+let pendingLoginUsuario = ''; // usado no fluxo de verificação em duas etapas
+
+function getSessionToken(){ return currentSession ? currentSession.token : null; }
+
+async function api(action, payload){
+  const finalPayload = Object.assign({}, payload||{}, { token: getSessionToken() });
+  try{
+    const res = await fetch(API_URL, {method:'POST', body: JSON.stringify({action, payload: finalPayload})});
+    const result = await res.json();
+    if(result && result.reason==='unauthorized'){ handleSessionExpired(); }
+    if(result && result.ok) suppressAutoRefreshUntil = Date.now()+8000;
+    return result;
+  }catch(err){
+    console.error('Falha de rede ao chamar a planilha:', err);
+    return {ok:false, error:String(err)};
+  }
+}
+async function loadAll(){
+  if(!currentSession) return;
+  document.getElementById('syncStatus').textContent='Sincronizando...';
+  try{
+    const res = await fetch(API_URL+'?token='+encodeURIComponent(currentSession.token));
+    const data = await res.json();
+    if(data && data.error==='unauthorized'){ handleSessionExpired(); return; }
+    if(Date.now() < suppressAutoRefreshUntil || pendingSaveIds.size>0){
+      // evita sobrescrever pedidos/clientes recém-criados que ainda não foram confirmados na planilha
+      document.getElementById('syncStatus').textContent='Sincronizado (aguardando confirmação de gravações recentes)';
+    } else {
+      clients = data.clients||[]; orders = data.orders||[]; changes = data.changes||[]; dailySlas = data.dailySlas||[];
+      occurrences = data.occurrences||[]; occurrenceTypes = data.occurrenceTypes||[]; occurrenceSectors = data.occurrenceSectors||[]; separatorsList = data.separators||[];
+      if(data.lojas) allLojasCache = data.lojas;
+      document.getElementById('syncStatus').textContent='Sincronizado com a planilha';
+    }
+  }catch(err){
+    document.getElementById('syncStatus').textContent='Falha ao conectar à planilha — verifique API_URL';
+    console.error(err);
+  }
+  if(currentSession.perfil==='Separador') renderSeparatorPanel(); else renderAll();
+}
+
+
+function nextOrderId(){const max=orders.reduce((m,o)=>Math.max(m,parseInt(String(o.ID||'').replace(/\D/g,''),10)||0),1000);return 'PED-'+(max+1);}
+function nextClientId(){const max=clients.reduce((m,c)=>Math.max(m,parseInt(String(c.ID||'').replace(/\D/g,''),10)||0),100);return 'CLI-'+(max+1);}
+
+function inferStatus(o){let s=0;stages.forEach((st,i)=>{if(o[st.key])s=i;});return s;}
+
+// ===== FILTROS =====
+function currentRange(){
+  const s=document.getElementById('dateStart').value, e=document.getElementById('dateEnd').value;
+  return {start: s? new Date(s+'T00:00:00'): null, end: e? new Date(e+'T23:59:59'): null};
+}
+function setQuickDate(kind){
+  const today=new Date(); const fmt=d=>d.toISOString().slice(0,10);
+  if(kind==='today'){document.getElementById('dateStart').value=fmt(today);document.getElementById('dateEnd').value=fmt(today);}
+  else if(kind==='yesterday'){const d=new Date();d.setDate(d.getDate()-1);document.getElementById('dateStart').value=fmt(d);document.getElementById('dateEnd').value=fmt(d);}
+  else if(kind==='7days'){const d=new Date();d.setDate(d.getDate()-6);document.getElementById('dateStart').value=fmt(d);document.getElementById('dateEnd').value=fmt(today);}
+  renderAll();
+}
+function clearFilters(){document.getElementById('dateStart').value='';document.getElementById('dateEnd').value='';renderAll();}
+const LOJA_PADRAO_ID_JS = 'LOJA-1';
+function inCurrentLoja(lojaId){
+  if(!currentSession || !currentSession.loja) return true; // ainda sem loja definida (não deveria acontecer, mas evita tela vazia)
+  return String(lojaId||LOJA_PADRAO_ID_JS) === String(currentSession.loja);
+}
+function filteredOrders(){
+  const {start,end}=currentRange();
+  return orders.filter(o=>{
+    if(!inCurrentLoja(o.LojaID)) return false;
+    if(!o.RecebidoEm) return true;
+    const d=new Date(o.RecebidoEm);
+    if(start && d<start) return false;
+    if(end && d>end) return false;
+    return true;
+  });
+}
+
+// ===== TABS =====
+function switchView(view, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+}
+
+// ===== RENDER =====
+function renderAll(){
+  renderKpis(); renderStageMetrics(); renderHourChart(); renderStatusChart();
+  renderKanban(); renderAnalysis(); renderDailyOrdersChart(); renderLiveSeparation(); renderSeparation(); renderOccurrences(); renderClients(); renderInactiveClients(); renderOrderClientSelect(); renderDailySla();
+}
+
+function fmtHoursMin(totalMinutes){
+  const n=Number(totalMinutes)||0; const h=Math.floor(n/60), m=n%60;
+  return h>0 ? `${h}h ${String(m).padStart(2,'0')}min` : `${m}min`;
+}
+function fmtDuration(ms){
+  if(ms==null || !Number.isFinite(ms) || ms<0) return '—';
+  const totalSec=Math.round(ms/1000);
+  const h=Math.floor(totalSec/3600), m=Math.floor((totalSec%3600)/60), s=totalSec%60;
+  return `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}min ${String(s).padStart(2,'0')}s`;
+}
+function slaMinutesOf(o){
+  const n=Number(o.SlaMinutos);
+  if(Number.isFinite(n) && n>0) return n;
+  const today = o.RecebidoEm ? new Date(o.RecebidoEm).toISOString().slice(0,10) : '';
+  const rec = dailySlas.find(d=>String(d.Data).slice(0,10)===today);
+  return rec ? Number(rec.Minutos)||300 : 300;
+}
+function todaysSlaMinutes(){
+  const todayStr = new Date().toISOString().slice(0,10);
+  const rec = dailySlas.find(d=>String(d.Data).slice(0,10)===todayStr);
+  return rec ? (Number(rec.Minutos)||300) : 300;
+}
+function isLate(o){
+  if(!o.RecebidoEm || o.ClienteRecebeu) return false;
+  const due = new Date(o.RecebidoEm).getTime() + slaMinutesOf(o)*60000;
+  return Date.now() > due;
+}
+
+function fmtItemRate(items, ms){
+  if(!ms || ms<=0) return '—';
+  const minutes = ms/60000;
+  if(minutes < 60){
+    const perMin = items/minutes;
+    return `${perMin.toFixed(2)} itens/min`;
+  }
+  const perHour = items/(ms/3600000);
+  return `${perHour.toFixed(1)} itens/h`;
+}
+function itemsPerHourSeparation(list){
+  const withPick = list.filter(o=>o.InicioSeparacao && o.FimColeta);
+  const totalItems = withPick.reduce((sum,o)=>sum+(Number(o.QtdItens)||1),0);
+  const totalHours = withPick.reduce((sum,o)=>sum+((new Date(o.FimColeta)-new Date(o.InicioSeparacao))/3600000),0);
+  return totalHours>0 ? (totalItems/totalHours) : null;
+}
+function renderKpis(){
+  const list=filteredOrders();
+  const total=list.length;
+  const done=list.filter(o=>o.ClienteRecebeu).length;
+  const late=list.filter(isLate).length;
+  const urgent=list.filter(o=>o.Prioridade==='Urgente').length;
+  const onTime=done - list.filter(o=>o.ClienteRecebeu && new Date(o.ClienteRecebeu).getTime() > new Date(o.RecebidoEm).getTime()+slaMinutesOf(o)*60000).length;
+  const pct = done>0 ? Math.round((onTime/done)*100) : 0;
+  const pickedList = list.filter(o=>o.InicioSeparacao && o.FimColeta);
+  const totalItemsPicked = pickedList.reduce((sum,o)=>sum+(Number(o.QtdItens)||1),0);
+  const totalMsPicked = pickedList.reduce((sum,o)=>sum+(new Date(o.FimColeta)-new Date(o.InicioSeparacao)),0);
+  const kpis=[
+    {label:'Pedidos no período', value: total, sub: 'Total filtrado', cls:''},
+    {label:'Entregues / retirados', value: done, sub: `${total-done} em andamento`, cls:'good'},
+    {label:'Em atraso (SLA)', value: late, sub: 'Ainda não finalizados', cls: late>0?'bad':'good'},
+    {label:'Prioridade urgente', value: urgent, sub: 'No período', cls: urgent>0?'warn':''},
+    {label:'% dentro do SLA', value: pct+'%', sub: `${onTime} de ${done} concluídos`, cls: pct>=80?'good':(pct>=50?'warn':'bad')},
+    {label:'Ritmo de separação', value: fmtItemRate(totalItemsPicked, totalMsPicked), sub:`${totalItemsPicked} itens em ${fmtDuration(totalMsPicked)}`, cls:''},
+    {label:'SLA padrão do dia', value: fmtHoursMin(todaysSlaMinutes()), sub: todaysSlaMinutes()===300 ? 'Padrão (nada cadastrado para hoje)' : 'Cadastrado para hoje', cls:''}
+  ];
+  document.getElementById('kpiGrid').innerHTML = kpis.map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+}
+
+function renderStageMetrics(){
+  const list=filteredOrders();
+  const pairs=[['RecebidoEm','InicioSeparacao','Espera p/ separação'],['InicioSeparacao','FimColeta','Separação'],['FimColeta','CheckoutFinalizado','Coleta → checkout'],['CheckoutFinalizado','SaidaLoja','Checkout → saída'],['SaidaLoja','ClienteRecebeu','Saída → recebimento']];
+  const html=pairs.map(([from,to,label])=>{
+    const durs=list.filter(o=>o[from]&&o[to]).map(o=>new Date(o[to])-new Date(o[from]));
+    const avg=durs.length? durs.reduce((a,b)=>a+b,0)/durs.length : null;
+    return `<div class="stage-metric"><div class="name">${label}</div><div class="time">${fmtDuration(avg)}</div><div class="count">${durs.length} pedido(s)</div></div>`;
+  }).join('');
+  document.getElementById('stageMetrics').innerHTML=html;
+}
+
+function renderHourChart(){
+  const list=filteredOrders();
+  const counts=new Array(24).fill(0);
+  list.forEach(o=>{if(o.RecebidoEm) counts[new Date(o.RecebidoEm).getHours()]++;});
+  const max=Math.max(1,...counts);
+  document.getElementById('hourChart').innerHTML = counts.map((c,h)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(2,(c/max)*180)}px" title="${c} pedido(s)"></div><div class="bar-label">${String(h).padStart(2,'0')}h</div></div>`).join('');
+}
+
+function renderStatusChart(){
+  const list=filteredOrders();
+  const counts=stages.map(()=>0);
+  list.forEach(o=>counts[inferStatus(o)]++);
+  const max=Math.max(1,...counts);
+  document.getElementById('statusChart').innerHTML = stages.map((st,i)=>`
+    <div class="status-row"><div>${st.title}</div><div class="status-track"><div class="status-fill" style="width:${(counts[i]/max)*100}%;background:${st.color}"></div></div><div class="status-count">${counts[i]}</div></div>
+  `).join('');
+}
+
+function kanbanOrders(){
+  const {start,end}=currentRange();
+  const list=filteredOrders();
+  const hint=document.getElementById('kanbanHint');
+  if(start || end){
+    if(hint) hint.textContent='Filtro de data ativo: exibindo todos os pedidos do período, inclusive os já concluídos.';
+    return list;
+  }
+  if(hint) hint.textContent='Mostrando pedidos pendentes + concluídos de hoje. Use os filtros de data acima para ver pedidos concluídos de outros dias.';
+  const todayStr = new Date().toDateString();
+  return list.filter(o=> !o.ClienteRecebeu || new Date(o.ClienteRecebeu).toDateString()===todayStr);
+}
+
+function renderKanban(){
+  const list=kanbanOrders();
+  const now=Date.now();
+  document.getElementById('kanbanBoard').innerHTML = stages.map((st,i)=>{
+    const items=list.filter(o=>inferStatus(o)===i);
+    const cards=items.map(o=>{
+      const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+      const late=isLate(o);
+      const nowRef = o.ClienteRecebeu ? new Date(o.ClienteRecebeu).getTime() : now;
+      const enteredAt = o[st.key] || o.RecebidoEm;
+      const totalElapsed = o.RecebidoEm ? nowRef - new Date(o.RecebidoEm).getTime() : null;
+      const stageElapsed = enteredAt ? nowRef - new Date(enteredAt).getTime() : null;
+      const slaMin = slaMinutesOf(o);
+      const isCustomSla = Number.isFinite(Number(o.SlaMinutos)) && Number(o.SlaMinutos)>0;
+      const prazo = o.RecebidoEm ? new Date(new Date(o.RecebidoEm).getTime()+slaMin*60000) : null;
+      const entradaTxt = enteredAt ? new Date(enteredAt).toLocaleTimeString('pt-BR') : '—';
+      const slaTxt = fmtDuration(slaMin*60000);
+      const prazoTxt = prazo ? prazo.toLocaleTimeString('pt-BR') : '—';
+      const itemCount = Number(o.QtdItens)||1;
+      const hasAssignment = o.Separador && String(o.Separador).trim();
+      const changeCount = changes.filter(c=>String(c.PedidoID)===String(o.ID)).length;
+      const isLastStage = i>=stages.length-1;
+      const totalHoursElapsed = (!o.ClienteRecebeu && totalElapsed!=null) ? totalElapsed/3600000 : null;
+      let blinkClass = '';
+      if(o.Prioridade==='Urgente' && !o.ClienteRecebeu) blinkClass='blink-red';
+      else if(totalHoursElapsed!=null && totalHoursElapsed>6) blinkClass='blink-red';
+      else if(totalHoursElapsed!=null && totalHoursElapsed>=4) blinkClass='blink-yellow';
+      const blinkDot = blinkClass ? `<span class="blink-dot ${blinkClass}" title="${blinkClass==='blink-red'?'Atenção: urgente ou acima de 6h em aberto':'Atenção: entre 4h e 6h em aberto'}"></span>` : '';
+      return `<div class="order-card ${o.Prioridade==='Urgente'?'priority':''} ${late?'late':''}" draggable="true" ondragstart="dragStart(event,'${o.ID}')">
+        <div class="order-top"><span class="order-id">${o.ID}</span><span style="display:flex;align-items:center;gap:6px">${blinkDot}<span class="order-type-pill">${o.Tipo||''}</span><button class="card-priority ${o.Prioridade==='Urgente'?'is-urgent':''}" title="${o.Prioridade==='Urgente'?'Marcar como Normal':'Marcar como Urgente'}" onclick="event.stopPropagation();togglePriority('${o.ID}')">⚑</button><button class="card-delete" title="Excluir pedido" onclick="event.stopPropagation();quickDeleteOrder('${o.ID}')">×</button></span></div>
+        <div class="order-client">${client?client.Nome:(o.Cliente||'Cliente')}</div>
+        <div class="order-line"><span class="ic">☎</span>${o.Telefone||client?.Telefone||'—'}<span class="ic" style="margin-left:6px">📄</span>${o.PedidoOriginal?'Pedido colado':'Sem texto colado'}</div>
+        ${changeCount>0?`<div class="order-changes-pill">↺ ${changeCount} alteração(ões)</div>`:''}
+        ${o.Prioridade==='Urgente'?`<div class="order-urgent">URGENTE</div>`:''}
+        <div class="order-line assign" style="cursor:pointer" onclick="openAssignment('${o.ID}')" title="Clique para definir o separador"><span class="ic">👤</span><span class="${hasAssignment?'set':'missing'}">${hasAssignment?('Separador: '+o.Separador):'Separador não definido'}</span><span class="ic" style="margin-left:6px">🧺</span>${itemCount} item(ns)</div>
+        <div class="timer-box">
+          <div><div class="timer-label">Tempo total</div><div class="timer-value">${fmtDuration(totalElapsed)}</div></div>
+          <div><div class="timer-label">Na etapa</div><div class="timer-value" style="${late?'color:var(--red)':''}">${fmtDuration(stageElapsed)}</div></div>
+        </div>
+        <div class="order-sub">Entrada: <b>${entradaTxt}</b> &nbsp; SLA: <b>${slaTxt}</b></div>
+        <div class="order-sub">Prazo: <b>${prazoTxt}</b> &nbsp; ${isCustomSla?'SLA do pedido':'SLA padrão'}</div>
+        <div class="order-actions">
+          <button class="btn" onclick="openItems('${o.ID}')">Pedido</button>
+          <button class="btn" onclick="openAssignment('${o.ID}')">Separador / SLA</button>
+          <button class="btn" onclick="openDetail('${o.ID}')">Detalhes</button>
+          ${isLastStage?`<button class="btn btn-done" disabled>Concluído</button>`:`<button class="btn btn-advance" onclick="advanceStage('${o.ID}')">Avançar</button>`}
+        </div>
+      </div>`;
+    }).join('') || '<div class="empty">Sem pedidos</div>';
+    return `<div class="kanban-col" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropOn(event,${i})">
+      <div class="col-head"><div class="col-title"><span class="dot" style="background:${st.color}"></span>${st.title}</div><span class="badge">${items.length}</span></div>
+      <div class="cards">${cards}</div>
+    </div>`;
+  }).join('');
+}
+const stageWhatsAppMessages = {
+  RecebidoEm: (o)=>`Olá, ${firstName(o)}! Recebemos seu pedido *${o.ID}* aqui na Rede Nilo e já vamos começar a preparação. 😊`,
+  InicioSeparacao: (o)=>`${firstName(o)}, seu pedido *${o.ID}* entrou em *separação* agora! Em breve te atualizamos.`,
+  FimColeta: (o)=>`${firstName(o)}, a *coleta do seu pedido ${o.ID}* foi finalizada. Estamos seguindo para as próximas etapas.`,
+  // Checkout finalizado é etapa interna — não gera notificação ao cliente
+  SaidaLoja: (o)=> o.Tipo==='Retirada'
+    ? `${firstName(o)}, seu pedido *${o.ID}* já está pronto e disponível para *retirada* na loja!`
+    : `${firstName(o)}, seu pedido *${o.ID}* *saiu para entrega*! Já já chega até você.`,
+  ClienteRecebeu: (o)=>`${firstName(o)}, confirmamos a entrega do seu pedido *${o.ID}*. Obrigado por comprar com a Rede Nilo! 💛`
+};
+function firstName(o){
+  const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+  const full=(client?client.Nome:o.Cliente)||'';
+  return full.trim().split(' ')[0] || 'tudo bem';
+}
+function phoneForWhatsApp(o){
+  const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+  let phone=String(o.Telefone||client?.Telefone||'').replace(/\D/g,'');
+  if(!phone) return null;
+  if(phone.length<=11) phone='55'+phone; // adiciona DDI Brasil se não informado
+  return phone;
+}
+function notifyStageViaWhatsApp(o, stageKey){
+  if(currentSession && currentSession.perfil==='Separador') return; // separador não tem permissão para disparar mensagens ao cliente
+  const buildMsg = stageWhatsAppMessages[stageKey];
+  if(!buildMsg) return;
+  const phone = phoneForWhatsApp(o);
+  if(!phone){ showToast('Etapa avançada, mas o pedido não tem telefone para notificar o cliente.'); return; }
+  const stageInfo = stages.find(s=>s.key===stageKey);
+  document.getElementById('whatsappConfirmText').textContent = `Deseja enviar a mensagem de status ("${stageInfo?stageInfo.title:stageKey}") para o cliente via WhatsApp?`;
+  const yesBtn = document.getElementById('whatsappConfirmYesBtn');
+  const newYesBtn = yesBtn.cloneNode(true); // remove listeners antigos de chamadas anteriores
+  yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+  newYesBtn.addEventListener('click', ()=>{
+    const text = encodeURIComponent(buildMsg(o));
+    closeModal('whatsappConfirmModal');
+    window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+  });
+  openModal('whatsappConfirmModal');
+}
+
+let draggedId=null;
+function dragStart(e,id){draggedId=id;e.target.classList.add('dragging');}
+function dropOn(e,stageIndex){
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  if(!draggedId) return;
+  setStage(draggedId, stageIndex);
+  draggedId=null;
+}
+function setStage(id, index){
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  const previousIndex = inferStatus(o);
+  for(let i=1;i<=index;i++){ if(!o[stages[i].key]) o[stages[i].key]=new Date().toISOString(); }
+  for(let i=index+1;i<stages.length;i++){ o[stages[i].key]=''; }
+  if(!o.RecebidoEm) o.RecebidoEm=new Date().toISOString();
+  // só notifica o cliente quando o pedido avança (não quando é movido para trás por correção)
+  if(index>previousIndex) notifyStageViaWhatsApp(o, stages[index].key);
+  persistOrder(o);
+}
+function advanceStage(id){
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  const idx=Math.min(stages.length-1, inferStatus(o)+1);
+  setStage(id, idx);
+}
+
+async function persistOrder(o){
+  renderAll();
+  const res = await api('saveOrder', o);
+  if(!res.ok){
+    console.error('Falha ao salvar pedido:', res.error || res);
+    showToast('Falha ao salvar pedido na planilha' + (res.error ? ': '+String(res.error).slice(0,120) : ''));
+  }
+}
+
+function renderDailyOrdersChart(){
+  const list = filteredOrders(); // já respeita o filtro de Data inicial/final do topo
+  const byDay = {}; // 'YYYY-MM-DD' -> {total, delivered}
+  list.forEach(o=>{
+    if(!o.RecebidoEm) return;
+    const key = new Date(o.RecebidoEm).toISOString().slice(0,10);
+    if(!byDay[key]) byDay[key] = {total:0, delivered:0};
+    byDay[key].total++;
+    if(o.ClienteRecebeu) byDay[key].delivered++;
+  });
+  const days = Object.keys(byDay).sort();
+  const el = document.getElementById('dailyOrdersChart');
+  if(days.length===0){ el.innerHTML = '<div class="empty" style="width:100%">Sem pedidos no período filtrado</div>'; return; }
+  const maxVal = Math.max(1, ...days.map(d=>byDay[d].total));
+  el.innerHTML = days.map(d=>{
+    const {total, delivered} = byDay[d];
+    const label = new Date(d+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    return `<div class="bar-col">
+      <div class="daily-bar-group" title="${label}: ${total} total, ${delivered} entregue(s)">
+        <div class="daily-bar total" style="height:${Math.max(2,(total/maxVal)*190)}px"></div>
+        <div class="daily-bar delivered" style="height:${Math.max(2,(delivered/maxVal)*190)}px"></div>
+      </div>
+      <div class="bar-label">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAnalysis(){
+  const list=filteredOrders();
+  document.getElementById('analysisBody').innerHTML = list.map(o=>{
+    const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+    const items=Number(o.QtdItens)||1;
+    const wait = (o.RecebidoEm&&o.InicioSeparacao)? new Date(o.InicioSeparacao)-new Date(o.RecebidoEm) : null;
+    const pick = (o.InicioSeparacao&&o.FimColeta)? new Date(o.FimColeta)-new Date(o.InicioSeparacao) : null;
+    const perItem = pick!=null ? pick/items : null;
+    const toCheckout = (o.FimColeta&&o.CheckoutFinalizado)? new Date(o.CheckoutFinalizado)-new Date(o.FimColeta) : null;
+    const toDispatch = (o.CheckoutFinalizado&&o.SaidaLoja)? new Date(o.SaidaLoja)-new Date(o.CheckoutFinalizado) : null;
+    const toDelivered = (o.SaidaLoja&&o.ClienteRecebeu)? new Date(o.ClienteRecebeu)-new Date(o.SaidaLoja) : null;
+    const cycle = (o.RecebidoEm&&o.ClienteRecebeu)? new Date(o.ClienteRecebeu)-new Date(o.RecebidoEm) : null;
+    const sla = slaMinutesOf(o);
+    const withinSla = cycle!=null ? (cycle <= sla*60000) : null;
+    return `<tr>
+      <td>${o.ID}</td><td>${client?client.Nome:o.Cliente||''}</td><td>${o.Separador||'—'}</td><td>${items}</td>
+      <td>${o.RecebidoEm?new Date(o.RecebidoEm).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.InicioSeparacao?new Date(o.InicioSeparacao).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.FimColeta?new Date(o.FimColeta).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.CheckoutFinalizado?new Date(o.CheckoutFinalizado).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.SaidaLoja?new Date(o.SaidaLoja).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.ClienteRecebeu?new Date(o.ClienteRecebeu).toLocaleString('pt-BR'):'—'}</td>
+      <td>${fmtDuration(wait)}</td><td>${fmtDuration(pick)}</td><td>${fmtDuration(perItem)}</td>
+      <td>${fmtDuration(toCheckout)}</td><td>${fmtDuration(toDispatch)}</td><td>${fmtDuration(toDelivered)}</td><td>${fmtDuration(cycle)}</td>
+      <td>${sla} min</td>
+      <td>${withinSla===null?'—':(withinSla?'<span class="sla-ok">Dentro do SLA</span>':'<span class="sla-bad">Fora do SLA</span>')}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="19" class="empty">Sem pedidos no período</td></tr>';
+}
+
+let liveSepExpanded = new Set();
+function toggleLiveSepDetails(orderId){
+  if(liveSepExpanded.has(orderId)) liveSepExpanded.delete(orderId); else liveSepExpanded.add(orderId);
+  renderLiveSeparation();
+}
+function renderLiveSeparation(){
+  const container = document.getElementById('liveSeparationList');
+  if(!container) return; // painel do separador não tem esse elemento
+  const inSeparation = filteredOrders().filter(o=>inferStatus(o)===1 && o.Separador);
+  if(inSeparation.length===0){
+    container.innerHTML = '<div class="empty">Nenhum pedido em separação no momento.</div>';
+    return;
+  }
+  const now = Date.now();
+  container.innerHTML = inSeparation.map(o=>{
+    const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+    const items = getOrderItems(o);
+    const done = items.filter(it=>it.separado).length;
+    const total = items.length;
+    const pct = total ? Math.round(done/total*100) : 0;
+    const startedAt = o.InicioSeparacao ? new Date(o.InicioSeparacao).getTime() : now;
+    const elapsedMs = now-startedAt;
+    const h=Math.floor(elapsedMs/3600000), m=Math.floor((elapsedMs%3600000)/60000), s=Math.floor((elapsedMs%60000)/1000);
+    const timerTxt = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const separados = items.filter(it=>it.separado);
+    const faltam = items.filter(it=>!it.separado);
+    const isOpen = liveSepExpanded.has(o.ID);
+    return `<div class="live-sep-card">
+      <div class="live-sep-head" onclick="toggleLiveSepDetails('${o.ID}')">
+        <div>
+          <div class="live-sep-name">${o.Separador} — ${client?client.Nome:(o.Cliente||'Cliente')} <span style="color:var(--muted);font-weight:600">(${o.ID})</span></div>
+          <div class="live-sep-sub">${done} de ${total} itens separados · ⏱ ${timerTxt} em separação</div>
+        </div>
+        <div class="live-sep-pct">${total?pct+'%':'—'}</div>
+      </div>
+      <div class="live-sep-track"><div class="live-sep-fill" style="width:${pct}%"></div></div>
+      <div class="live-sep-details ${isOpen?'open':''}" id="liveSepDetails-${o.ID}">
+        <div class="col"><h4>✓ Já separados (${separados.length})</h4><ul>${separados.map(it=>`<li>${it.qtd?it.qtd+' — ':''}${it.texto}</li>`).join('') || '<li style="color:var(--muted);list-style:none;margin-left:-16px">Nenhum ainda</li>'}</ul></div>
+        <div class="col"><h4>Faltam separar (${faltam.length})</h4><ul>${faltam.map(it=>`<li>${it.qtd?it.qtd+' — ':''}${it.texto}</li>`).join('') || '<li style="color:var(--muted);list-style:none;margin-left:-16px">Tudo separado 🎉</li>'}</ul></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSeparation(){
+  const filterSel=document.getElementById('separationFilter');
+  const selected=filterSel.value;
+
+  const fullList=filteredOrders().filter(o=>o.InicioSeparacao && o.FimColeta);
+  const overall = itemsPerHourSeparation(fullList);
+  const totalItemsAll = fullList.reduce((sum,o)=>sum+(Number(o.QtdItens)||1),0);
+  const totalOrdersAll = fullList.length;
+
+  const bySeparatorAll = {};
+  fullList.forEach(o=>{
+    const name = (o.Separador && String(o.Separador).trim()) || 'Sem separador definido';
+    const items = Number(o.QtdItens)||1;
+    const ms = new Date(o.FimColeta) - new Date(o.InicioSeparacao);
+    if(!bySeparatorAll[name]) bySeparatorAll[name] = {name, orders:0, items:0, ms:0, detail:[]};
+    bySeparatorAll[name].orders++; bySeparatorAll[name].items+=items; bySeparatorAll[name].ms+=ms;
+    bySeparatorAll[name].detail.push(`${o.ID} (${items} item${items>1?'s':''})`);
+  });
+  const rankingAll = Object.values(bySeparatorAll).map(s=>({
+    ...s, hours: s.ms/3600000,
+    itemsPerHour: s.ms>0 ? s.items/(s.ms/3600000) : 0,
+    msPerItem: s.items>0 ? s.ms/s.items : 0
+  })).sort((a,b)=>b.itemsPerHour-a.itemsPerHour);
+
+  // popula o filtro preservando a seleção atual
+  const names=rankingAll.map(s=>s.name);
+  filterSel.innerHTML = '<option value="">Todos</option>' + names.map(n=>`<option value="${n}" ${n===selected?'selected':''}>${n}</option>`).join('');
+
+  const ranking = selected ? rankingAll.filter(s=>s.name===selected) : rankingAll;
+  const list = selected ? fullList.filter(o=>((o.Separador&&String(o.Separador).trim())||'Sem separador definido')===selected) : fullList;
+  const totalItems = selected ? ranking.reduce((s,r)=>s+r.items,0) : totalItemsAll;
+  const totalOrders = selected ? ranking.reduce((s,r)=>s+r.orders,0) : totalOrdersAll;
+  const totalMs = list.reduce((sum,o)=>sum+(new Date(o.FimColeta)-new Date(o.InicioSeparacao)),0);
+  const totalHours = totalMs/3600000;
+
+  const MIN_SAMPLE_MINUTES = 5;
+  const best = rankingAll[0];
+  const sampleWarning = (totalMs/60000 < MIN_SAMPLE_MINUTES) ? ' — amostra pequena, resultado pode não ser representativo' : '';
+  const bestWarning = (best && best.ms/60000 < MIN_SAMPLE_MINUTES) ? ' — amostra pequena' : '';
+  document.getElementById('separationKpis').innerHTML = [
+    {label: selected? 'Ritmo — '+selected : 'Ritmo geral de separação', value: fmtItemRate(totalItems, totalMs), sub:`${totalItems} itens em ${fmtDuration(totalMs)} (${totalOrders} pedido(s))${sampleWarning}`, cls: sampleWarning?'warn':''},
+    {label:'Tempo total em separação', value: fmtDuration(totalMs), sub:'Soma do período filtrado', cls:''},
+    {label:'Separadores ativos', value: rankingAll.length, sub:'No período filtrado', cls:''},
+    {label:'Melhor desempenho', value: best? fmtItemRate(best.items,best.ms) : '—', sub: best? best.name+bestWarning : 'Sem dados', cls: bestWarning?'warn':'good'}
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+
+  document.getElementById('separationBody').innerHTML = ranking.map((s,i)=>`<tr title="Pedidos considerados: ${s.detail.join(', ')}">
+    <td>${i+1}º</td><td>${s.name}</td><td>${s.orders}</td><td>${s.items} <span style="color:var(--muted);font-weight:400">ⓘ</span></td><td>${fmtDuration(s.ms)}</td><td><b>${fmtItemRate(s.items,s.ms)}</b>${s.ms/60000<MIN_SAMPLE_MINUTES?' <span style="color:var(--orange);font-weight:800">(amostra pequena)</span>':''}</td><td>${fmtDuration(s.msPerItem)}</td>
+  </tr>`).join('') || '<tr><td colspan="7" class="empty">Sem pedidos com separação concluída no período</td></tr>';
+
+  // gráfico por tempo de separação
+  const byTime=[...ranking].sort((a,b)=>b.ms-a.ms);
+  const maxMs=Math.max(1,...byTime.map(s=>s.ms));
+  document.getElementById('separationTimeChart').innerHTML = byTime.map(s=>`
+    <div class="status-row"><div>${s.name}</div><div class="status-track"><div class="status-fill" style="width:${(s.ms/maxMs)*100}%;background:var(--primary)"></div></div><div class="status-count">${fmtDuration(s.ms)}</div></div>
+  `).join('') || '<div class="empty">Sem dados no período</div>';
+
+  // gráfico por quantidade de itens
+  const byItems=[...ranking].sort((a,b)=>b.items-a.items);
+  const maxItems=Math.max(1,...byItems.map(s=>s.items));
+  document.getElementById('separationItemsChart').innerHTML = byItems.map(s=>`
+    <div class="status-row"><div>${s.name}</div><div class="status-track"><div class="status-fill" style="width:${(s.items/maxItems)*100}%;background:var(--blue)"></div></div><div class="status-count">${s.items}</div></div>
+  `).join('') || '<div class="empty">Sem dados no período</div>';
+}
+
+function nextOccurrenceId(){const max=occurrences.reduce((m,o)=>Math.max(m,parseInt(String(o.ID||'').replace(/\D/g,''),10)||0),0);return 'OCR-'+(max+1);}
+
+function occurrenceRange(){
+  const s=document.getElementById('occDateStart').value, e=document.getElementById('occDateEnd').value;
+  return {start: s? new Date(s+'T00:00:00'): null, end: e? new Date(e+'T23:59:59'): null};
+}
+function filteredOccurrences(){
+  const {start,end}=occurrenceRange();
+  const typeFilter=document.getElementById('occFilterType').value;
+  const sectorFilter=document.getElementById('occFilterSector').value;
+  const clientFilter=document.getElementById('occFilterClient').value;
+  return occurrences.filter(o=>{
+    if(o.Data){ const d=new Date(o.Data); if(start&&d<start) return false; if(end&&d>end) return false; }
+    if(typeFilter && o.TipoOcorrencia!==typeFilter) return false;
+    if(sectorFilter && o.Setor!==sectorFilter) return false;
+    if(clientFilter && String(o.ClienteID)!==String(clientFilter)) return false;
+    return true;
+  });
+}
+
+function renderOccurrences(){
+  const list=filteredOccurrences();
+
+  // popular filtros (tipo, setor, cliente) preservando seleção atual
+  const typeSel=document.getElementById('occFilterType'), curType=typeSel.value;
+  const allTypes=dedupePreferClean([...DEFAULT_OCC_TYPES_FALLBACK, ...occurrenceTypes, ...occurrences.map(o=>o.TipoOcorrencia)].filter(Boolean));
+  typeSel.innerHTML='<option value="">Todos</option>'+allTypes.map(t=>`<option value="${t}" ${t===curType?'selected':''}>${t}</option>`).join('');
+
+  const sectorSel=document.getElementById('occFilterSector'), curSector=sectorSel.value;
+  const allSectors=dedupePreferClean([...DEFAULT_OCC_SECTORS_FALLBACK, ...occurrenceSectors, ...occurrences.map(o=>o.Setor)].filter(Boolean));
+  sectorSel.innerHTML='<option value="">Todos</option>'+allSectors.map(s=>`<option value="${s}" ${s===curSector?'selected':''}>${s}</option>`).join('');
+
+  const clientSel=document.getElementById('occFilterClient'), curClient=clientSel.value;
+  const clientIdsWithOcc=[...new Set(occurrences.map(o=>String(o.ClienteID)))];
+  clientSel.innerHTML='<option value="">Todos</option>'+clientIdsWithOcc.map(id=>{
+    const c=clients.find(x=>String(x.ID)===id); return `<option value="${id}" ${id===curClient?'selected':''}>${c?c.Nome:id}</option>`;
+  }).join('');
+
+  // KPIs
+  const total=list.length;
+  const byType={}; list.forEach(o=>byType[o.TipoOcorrencia]=(byType[o.TipoOcorrencia]||0)+1);
+  const bySector={}; list.forEach(o=>bySector[o.Setor]=(bySector[o.Setor]||0)+1);
+  const byClient={}; list.forEach(o=>{const key=String(o.ClienteID); byClient[key]=(byClient[key]||0)+1;});
+  const topType=Object.entries(byType).sort((a,b)=>b[1]-a[1])[0];
+  const topSector=Object.entries(bySector).sort((a,b)=>b[1]-a[1])[0];
+  const topClientEntry=Object.entries(byClient).sort((a,b)=>b[1]-a[1])[0];
+  const topClientName = topClientEntry ? (clients.find(c=>String(c.ID)===topClientEntry[0])?.Nome || topClientEntry[0]) : '—';
+  document.getElementById('occKpis').innerHTML = [
+    {label:'Ocorrências no período', value: total, sub:'Total filtrado', cls: total>0?'bad':'good'},
+    {label:'Tipo mais frequente', value: topType?topType[1]:0, sub: topType?topType[0]:'Sem dados', cls:'warn'},
+    {label:'Setor de origem mais recorrente', value: topSector?topSector[1]:0, sub: topSector?topSector[0]:'Sem dados', cls:'warn'},
+    {label:'Cliente mais afetado', value: topClientEntry?topClientEntry[1]:0, sub: topClientName, cls:''}
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+
+  // gráfico por tipo
+  const typeEntries=Object.entries(byType).sort((a,b)=>b[1]-a[1]);
+  const maxType=Math.max(1,...typeEntries.map(e=>e[1]));
+  document.getElementById('occTypeChart').innerHTML = typeEntries.map(([name,count])=>`
+    <div class="status-row"><div>${name}</div><div class="status-track"><div class="status-fill" style="width:${(count/maxType)*100}%;background:var(--red)"></div></div><div class="status-count">${count}</div></div>
+  `).join('') || '<div class="empty">Sem ocorrências no período</div>';
+
+  // gráfico por setor
+  const sectorEntries=Object.entries(bySector).sort((a,b)=>b[1]-a[1]);
+  const maxSector=Math.max(1,...sectorEntries.map(e=>e[1]));
+  document.getElementById('occSectorChart').innerHTML = sectorEntries.map(([name,count])=>`
+    <div class="status-row"><div>${name}</div><div class="status-track"><div class="status-fill" style="width:${(count/maxSector)*100}%;background:var(--orange)"></div></div><div class="status-count">${count}</div></div>
+  `).join('') || '<div class="empty">Sem ocorrências no período</div>';
+
+  // ranking de clientes
+  const clientRanking=Object.entries(byClient).map(([id,count])=>{
+    const clientOccs=list.filter(o=>String(o.ClienteID)===id);
+    const typeCounts={}; clientOccs.forEach(o=>typeCounts[o.TipoOcorrencia]=(typeCounts[o.TipoOcorrencia]||0)+1);
+    const commonType=Object.entries(typeCounts).sort((a,b)=>b[1]-a[1])[0];
+    return {id, name: clients.find(c=>String(c.ID)===id)?.Nome || id, count, commonType: commonType?commonType[0]:'—'};
+  }).sort((a,b)=>b.count-a.count);
+  document.getElementById('occClientRanking').innerHTML = clientRanking.map((r,i)=>`<tr><td>${i+1}º</td><td>${r.name}</td><td>${r.count}</td><td>${r.commonType}</td></tr>`).join('') || '<tr><td colspan="4" class="empty">Sem ocorrências no período</td></tr>';
+
+  // tabela de registros
+  document.getElementById('occurrencesBody').innerHTML = list.slice().sort((a,b)=>new Date(b.Data)-new Date(a.Data)).map(o=>{
+    const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+    return `<tr>
+      <td>${o.Data?new Date(o.Data).toLocaleDateString('pt-BR'):'—'}</td>
+      <td>${client?client.Nome:o.Cliente||'—'}</td>
+      <td>${o.PedidoID||'—'}</td>
+      <td>${o.TipoOcorrencia||'—'}</td>
+      <td>${o.Nome||'—'}</td>
+      <td>${o.Setor||'—'}</td>
+      <td style="white-space:normal;max-width:260px">${o.Descricao||''}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteOccurrence('${o.ID}')">Excluir</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="empty">Nenhuma ocorrência registrada no período</td></tr>';
+}
+
+function openOccurrenceModal(){
+  document.getElementById('occClient').innerHTML = '<option value="" disabled selected>Selecione o cliente...</option>' + sortedClients().map(c=>`<option value="${c.ID}">${c.Nome} — ${c.Telefone}</option>`).join('');
+  document.getElementById('occOrder').innerHTML = '<option value="">Nenhum</option>' + orders.map(o=>`<option value="${o.ID}">${o.ID} — ${o.Cliente||''}</option>`).join('');
+  const typeSel=document.getElementById('occType');
+  const allTypes=dedupePreferClean([...DEFAULT_OCC_TYPES_FALLBACK, ...occurrenceTypes]);
+  typeSel.innerHTML = allTypes.map(t=>`<option value="${t}">${t}</option>`).join('') + '<option value="__novo__">＋ Cadastrar novo tipo...</option>';
+  document.getElementById('occNewTypeField').style.display='none';
+  document.getElementById('occNewType').value='';
+  const sectorSel=document.getElementById('occSector');
+  const allSectors=dedupePreferClean([...DEFAULT_OCC_SECTORS_FALLBACK, ...occurrenceSectors]);
+  sectorSel.innerHTML = allSectors.map(s=>`<option value="${s}">${s}</option>`).join('') + '<option value="__novo__">＋ Cadastrar novo setor...</option>';
+  document.getElementById('occNewSectorField').style.display='none';
+  document.getElementById('occNewSector').value='';
+  document.getElementById('occDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('occName').value='';
+  document.getElementById('occDescription').value='';
+  openModal('occurrenceModal');
+}
+function normalizeForDedupe(s){
+  return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+}
+function isBrokenText(s){
+  return /[√Ã]|£|¢|©|ª/.test(String(s||''));
+}
+function dedupePreferClean(list){
+  const seen = new Map(); // chave normalizada -> valor escolhido
+  list.forEach(v=>{
+    if(!v) return;
+    const key = normalizeForDedupe(v);
+    if(!key) return;
+    const current = seen.get(key);
+    if(!current){ seen.set(key, v); return; }
+    // troca o valor guardado pelo atual somente se o atual estiver "limpo" e o guardado estiver corrompido
+    if(isBrokenText(current) && !isBrokenText(v)) seen.set(key, v);
+  });
+  return [...seen.values()];
+}
+const DEFAULT_OCC_TYPES_FALLBACK=['Produtos não faturado','Quantidade errada','Produto trocado','Não conferido na prevenção'];
+const DEFAULT_OCC_SECTORS_FALLBACK=['Pedido televendas','Separação','Caixa','Prevenção','Entrega'];
+function onOccTypeChange(){
+  const v=document.getElementById('occType').value;
+  document.getElementById('occNewTypeField').style.display = v==='__novo__' ? 'block' : 'none';
+}
+function onOccSectorChange(){
+  const v=document.getElementById('occSector').value;
+  document.getElementById('occNewSectorField').style.display = v==='__novo__' ? 'block' : 'none';
+}
+async function saveOccurrence(){
+  const clientId=document.getElementById('occClient').value;
+  const client=clients.find(c=>String(c.ID)===String(clientId));
+  let type=document.getElementById('occType').value;
+  if(type==='__novo__'){
+    type=document.getElementById('occNewType').value.trim();
+    if(!type){showToast('Informe o novo tipo de ocorrência.');return;}
+  }
+  const name=document.getElementById('occName').value.trim();
+  let sector=document.getElementById('occSector').value;
+  if(sector==='__novo__'){
+    sector=document.getElementById('occNewSector').value.trim();
+    if(!sector){showToast('Informe o novo setor de origem.');return;}
+  }
+  const date=document.getElementById('occDate').value;
+  if(!client || !type || !name || !sector || !date){showToast('Preencha cliente, data, tipo, responsável e setor.');return;}
+
+  const o={
+    ID: nextOccurrenceId(), Data: new Date(date+'T00:00:00').toISOString(), ClienteID: client.ID, Cliente: client.Nome,
+    PedidoID: document.getElementById('occOrder').value || '', TipoOcorrencia: type, Nome: name, Setor: sector,
+    Descricao: document.getElementById('occDescription').value.trim()
+  };
+  const isNewType = !occurrenceTypes.includes(type);
+  const isNewSector = !occurrenceSectors.includes(sector);
+  occurrences.push(o);
+  if(isNewType) occurrenceTypes.push(type);
+  if(isNewSector) occurrenceSectors.push(sector);
+  pendingSaveIds.add(o.ID);
+  closeModal('occurrenceModal'); renderAll();
+  const res=await api('saveOccurrence', o);
+  pendingSaveIds.delete(o.ID);
+  if(!res.ok){
+    occurrences=occurrences.filter(x=>x.ID!==o.ID);
+    renderAll();
+    alert('Não foi possível salvar a ocorrência na planilha. Verifique a conexão e tente novamente.');
+    return;
+  }
+  if(isNewType) await api('addOccurrenceType', {tipo:type});
+  if(isNewSector) await api('addOccurrenceSector', {setor:sector});
+  showToast('Ocorrência registrada.');
+}
+async function deleteOccurrence(id){
+  if(!confirm('Excluir esta ocorrência definitivamente?')) return;
+  occurrences=occurrences.filter(x=>String(x.ID)!==String(id));
+  renderAll();
+  const res=await api('deleteOccurrence',{id});
+  if(!res.ok) showToast('Falha ao excluir ocorrência na planilha'); else showToast('Ocorrência excluída.');
+}
+
+function sortedClients(){
+  return clients.filter(c=>inCurrentLoja(c.LojaID)).slice().sort((a,b)=>String(a.Nome||'').localeCompare(String(b.Nome||''),'pt-BR',{sensitivity:'base'}));
+}
+function clientsInDateRange(){
+  const {start,end}=currentRange();
+  if(!start && !end) return clients;
+  return clients.filter(c=>{
+    if(!c.CriadoEm) return false; // sem data de cadastro, só entra quando não há filtro
+    const d=new Date(c.CriadoEm);
+    if(start && d<start) return false;
+    if(end && d>end) return false;
+    return true;
+  });
+}
+function clientsScopedForTab(){
+  const viewAll = currentSession.perfil==='Master' && document.getElementById('viewAllStoresClients') && document.getElementById('viewAllStoresClients').checked;
+  return viewAll ? clients : clients.filter(c=>inCurrentLoja(c.LojaID));
+}
+function lojaNomeById(id){
+  const l = allLojasCache.find(x=>String(x.ID)===String(id));
+  return l ? l.Nome : (id||'—');
+}
+function renderClients(){
+  const q=(document.getElementById('clientSearch').value||'').toLowerCase();
+  const onlyNew=document.getElementById('onlyNewClients').checked;
+  const scoped = clientsScopedForTab();
+  const viewingAll = currentSession.perfil==='Master' && document.getElementById('viewAllStoresClients') && document.getElementById('viewAllStoresClients').checked;
+  const list=scoped.filter(c=>!q || [c.ID,c.Nome,c.Telefone,c.Bairro].join(' ').toLowerCase().includes(q))
+    .filter(c=>!onlyNew || c.ClienteNovo==='Sim')
+    .slice().sort((a,b)=>String(a.Nome||'').localeCompare(String(b.Nome||''),'pt-BR',{sensitivity:'base'}));
+  document.getElementById('clientsBody').innerHTML = list.map(c=>`<tr>
+    <td>${c.ID}</td><td>${c.Nome}</td><td>${c.Telefone}</td><td>${c.Tipo}</td><td>${c.Bairro||''}</td><td>${c.Cidade||''}</td><td>${c.Endereco||''}</td>
+    ${viewingAll?`<td>${lojaNomeById(c.LojaID)}</td>`:''}
+    <td>${c.ClienteNovo==='Sim'?'<span class="sla-ok">Novo</span>':'—'}</td>
+    <td>${c.CriadoEm?new Date(c.CriadoEm).toLocaleDateString('pt-BR'):'—'}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="editClient('${c.ID}')">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.ID}')">Excluir</button></td>
+  </tr>`).join('') || `<tr><td colspan="${viewingAll?11:10}" class="empty">Nenhum cliente cadastrado</td></tr>`;
+
+  // cabeçalho: mostra/esconde a coluna "Loja" dinamicamente
+  const lojaHeaderCell = document.getElementById('clientsLojaHeader');
+  if(lojaHeaderCell) lojaHeaderCell.style.display = viewingAll ? 'table-cell' : 'none';
+
+  const periodClients = clientsInDateRange().filter(c=>viewingAll || inCurrentLoja(c.LojaID));
+  const newInPeriod = periodClients.filter(c=>c.ClienteNovo==='Sim');
+  const totalNewAllTime = scoped.filter(c=>c.ClienteNovo==='Sim').length;
+  document.getElementById('clientKpis').innerHTML = [
+    {label:'Clientes cadastrados', value: scoped.length, sub: viewingAll?'Todas as lojas':'Loja atual', cls:''},
+    {label:'Clientes novos no período', value: newInPeriod.length, sub:'Conforme filtro de data (Data inicial/final)', cls:'good'},
+    {label:'Clientes novos (total)', value: totalNewAllTime, sub:'Marcados como "Cliente novo"', cls:''}
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+}
+
+const INACTIVE_REPORT_REFERENCE_DATE = new Date('2026-08-10T23:59:59'); // data de partida definida para o relatório de "sem vendas"
+
+function computeInactiveClients(){
+  const viewAll = currentSession.perfil==='Master' && document.getElementById('viewAllStoresInactive') && document.getElementById('viewAllStoresInactive').checked;
+  const scopedClients = viewAll ? clients : clients.filter(c=>inCurrentLoja(c.LojaID));
+  const scopedOrders = viewAll ? orders : orders.filter(o=>inCurrentLoja(o.LojaID));
+  const now = INACTIVE_REPORT_REFERENCE_DATE.getTime();
+  return scopedClients.map(c=>{
+    // só conta como "venda" o pedido que chegou até "Cliente recebeu" — usa essa data como referência, não a data de criação do pedido
+    const clientSales = scopedOrders.filter(o=>String(o.ClienteID)===String(c.ID) && o.ClienteRecebeu);
+    if(clientSales.length===0){
+      return {client:c, lastOrder:null, daysSince:null, totalOrders:0};
+    }
+    const lastSaleDate = clientSales.reduce((max,o)=>{
+      const d=new Date(o.ClienteRecebeu).getTime();
+      return d>max ? d : max;
+    }, 0);
+    const daysSince = Math.max(0, Math.floor((now-lastSaleDate)/86400000));
+    return {client:c, lastOrder:new Date(lastSaleDate), daysSince, totalOrders:clientSales.length};
+  });
+}
+
+function renderInactiveClients(){
+  const threshold = Math.max(1, Number(document.getElementById('inactiveDaysThreshold').value)||15);
+  const viewAll = currentSession.perfil==='Master' && document.getElementById('viewAllStoresInactive') && document.getElementById('viewAllStoresInactive').checked;
+  const inactiveHeader = document.getElementById('inactiveLojaHeader');
+  if(inactiveHeader) inactiveHeader.style.display = viewAll ? 'table-cell' : 'none';
+
+  const all = computeInactiveClients();
+  const flagged = all.filter(r => r.daysSince===null || r.daysSince>=threshold)
+    .sort((a,b)=>{
+      if(a.daysSince===null && b.daysSince===null) return 0;
+      if(a.daysSince===null) return -1; // nunca comprou aparece primeiro
+      if(b.daysSince===null) return 1;
+      return b.daysSince-a.daysSince;
+    });
+
+  document.getElementById('inactiveClientsBody').innerHTML = flagged.map(r=>`<tr>
+    <td>${r.client.Nome}</td><td>${r.client.Telefone||''}</td>
+    ${viewAll?`<td>${lojaNomeById(r.client.LojaID)}</td>`:''}
+    <td>${r.lastOrder?r.lastOrder.toLocaleDateString('pt-BR'):'—'}</td>
+    <td>${r.daysSince===null?'<span class="sla-bad">Nunca comprou</span>':`<b>${r.daysSince} dia(s)</b>`}</td>
+    <td>${r.totalOrders}</td>
+  </tr>`).join('') || `<tr><td colspan="${viewAll?6:5}" class="empty">Nenhum cliente sem vendas nesse limite</td></tr>`;
+
+  const neverBought = flagged.filter(r=>r.daysSince===null).length;
+  const withSales = flagged.filter(r=>r.daysSince!==null);
+  const avgDays = withSales.length ? Math.round(withSales.reduce((s,r)=>s+r.daysSince,0)/withSales.length) : 0;
+  document.getElementById('inactiveClientsKpis').innerHTML = [
+    {label:'Clientes sem vendas', value: flagged.length, sub:`≥ ${threshold} dias ou nunca compraram`, cls: flagged.length>0?'bad':'good'},
+    {label:'Nunca compraram', value: neverBought, sub:'Cadastrados sem nenhum pedido', cls: neverBought>0?'warn':''},
+    {label:'Média de dias parados', value: avgDays, sub:'Entre os que já compraram alguma vez', cls:''}
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+}
+
+function exportInactiveClientsExcel(){
+  const threshold = Math.max(1, Number(document.getElementById('inactiveDaysThreshold').value)||15);
+  const all = computeInactiveClients().filter(r => r.daysSince===null || r.daysSince>=threshold);
+  if(all.length===0){ showToast('Nenhum cliente sem vendas para exportar.'); return; }
+  const header=['Cliente','Telefone','Loja','Última compra (entrega)','Dias sem comprar','Vendas concluídas'];
+  const rows=[header, ...all.map(r=>[
+    r.client.Nome, r.client.Telefone||'', lojaNomeById(r.client.LojaID),
+    r.lastOrder?r.lastOrder.toLocaleDateString('pt-BR'):'Nunca comprou',
+    r.daysSince===null?'—':r.daysSince, r.totalOrders
+  ])];
+  const blob=makeXlsx([{name:'Clientes sem vendas', rows, widths:[28,16,20,16,16,16], headerRows:[0]}]);
+  const url=URL.createObjectURL(new Blob([blob],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  const a=document.createElement('a'); a.href=url; a.download=`clientes_sem_vendas_${new Date().toISOString().slice(0,10)}.xlsx`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderOrderClientSelect(){
+  const sel=document.getElementById('orderClient');
+  const current=sel.value;
+  sel.innerHTML = '<option value="" disabled selected>Selecione o cliente...</option>' + sortedClients().map(c=>`<option value="${c.ID}">${c.Nome} — ${c.Telefone}</option>`).join('');
+  if(current && clients.some(c=>String(c.ID)===current)) sel.value=current;
+}
+
+function renderDailySla(){
+  const today=new Date().toISOString().slice(0,10);
+  const rec=dailySlas.find(d=>String(d.Data).slice(0,10)===today);
+  document.getElementById('dailySlaDisplay').querySelector('.daily-value').textContent = rec? `${fmtHoursMin(rec.Minutos)} — ${rec.Observacao||'sem observação'}` : `Não cadastrado (padrão ${fmtHoursMin(300)})`;
+}
+
+// ===== MODALS =====
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function openOrderModal(){
+  document.getElementById('orderClient').value='';
+  document.getElementById('orderOriginalText').value='';
+  document.getElementById('orderFileUpload').value='';
+  document.getElementById('orderFileStatus').textContent='';
+  document.getElementById('orderPriority').value='Normal';
+  document.getElementById('orderType').value='Entrega';
+  document.getElementById('orderItemCount').value=1;
+  const knownSeparators=dedupePreferClean([...separatorsList, ...orders.map(o=>String(o.Separador||'').trim())].filter(Boolean))
+    .sort((a,b)=>a.localeCompare(b,'pt-BR',{sensitivity:'base'}));
+  document.getElementById('orderSeparator').innerHTML =
+    '<option value="" selected>Selecione o separador...</option>' +
+    knownSeparators.map(s=>`<option value="${s}">${s}</option>`).join('') +
+    '<option value="__novo__">＋ Cadastrar separador...</option>';
+  document.getElementById('orderNewSeparatorField').style.display='none';
+  document.getElementById('orderNewSeparator').value='';
+  openModal('orderModal');
+}
+function onOrderSeparatorChange(){
+  const v=document.getElementById('orderSeparator').value;
+  document.getElementById('orderNewSeparatorField').style.display = v==='__novo__' ? 'block' : 'none';
+}
+// ===================== LEITURA DE ARQUIVOS ANEXADOS (PDF / Word / Excel / TXT) =====================
+const _loadedScripts = {};
+function loadScriptOnce(url){
+  if(_loadedScripts[url]) return _loadedScripts[url];
+  _loadedScripts[url] = new Promise((resolve, reject)=>{
+    const s=document.createElement('script');
+    s.src=url; s.onload=()=>resolve(); s.onerror=()=>reject(new Error('Falha ao carregar '+url));
+    document.head.appendChild(s);
+  });
+  return _loadedScripts[url];
+}
+function readFileAsArrayBuffer(file){
+  return new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=reject; r.readAsArrayBuffer(file); });
+}
+function readFileAsText(file){
+  return new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=reject; r.readAsText(file,'UTF-8'); });
+}
+
+async function extractTextFromPdf(file){
+  await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const buffer = await readFileAsArrayBuffer(file);
+  const pdf = await window.pdfjsLib.getDocument({data:buffer}).promise;
+  let text='';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(it=>it.str).join(' ') + '\n\n';
+  }
+  return text.trim();
+}
+async function extractTextFromDocx(file){
+  await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+  const buffer = await readFileAsArrayBuffer(file);
+  const result = await window.mammoth.extractRawText({arrayBuffer: buffer});
+  return (result.value||'').trim();
+}
+async function extractTextFromExcel(file){
+  await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+  const buffer = await readFileAsArrayBuffer(file);
+  const wb = window.XLSX.read(buffer, {type:'array'});
+  let text='';
+  wb.SheetNames.forEach(name=>{
+    const csv = window.XLSX.utils.sheet_to_csv(wb.Sheets[name], {blankrows:false});
+    if(csv.trim()) text += `--- ${name} ---\n${csv.trim()}\n\n`;
+  });
+  return text.trim();
+}
+
+async function handleOrderFileUpload(event){
+  const file = event.target.files[0];
+  const statusEl = document.getElementById('orderFileStatus');
+  if(!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  statusEl.textContent = 'Lendo arquivo, aguarde...';
+  statusEl.style.color = 'var(--muted)';
+  try{
+    let text = '';
+    if(ext==='pdf'){
+      text = await extractTextFromPdf(file);
+    } else if(ext==='docx'){
+      text = await extractTextFromDocx(file);
+    } else if(ext==='doc'){
+      statusEl.textContent = 'Formato .doc (Word antigo) não é suportado para leitura automática — salve como .docx e tente novamente, ou cole o texto manualmente.';
+      statusEl.style.color = 'var(--red)';
+      return;
+    } else if(ext==='xlsx' || ext==='xls'){
+      text = await extractTextFromExcel(file);
+    } else if(ext==='csv' || ext==='txt'){
+      text = await readFileAsText(file);
+    } else {
+      statusEl.textContent = 'Formato de arquivo não suportado.';
+      statusEl.style.color = 'var(--red)';
+      return;
+    }
+    if(!text || !text.trim()){
+      statusEl.textContent = 'Não foi possível extrair texto deste arquivo (pode ser uma imagem digitalizada).';
+      statusEl.style.color = 'var(--orange)';
+      return;
+    }
+    const textarea = document.getElementById('orderOriginalText');
+    if(textarea.value.trim() && !confirm('Já existe texto no campo do pedido. Deseja substituir pelo conteúdo do arquivo?')){
+      return;
+    }
+    textarea.value = text;
+    statusEl.textContent = `Arquivo "${file.name}" lido e transcrito com sucesso.`;
+    statusEl.style.color = 'var(--green)';
+    showToast('Arquivo lido e transcrito para o campo do pedido.');
+  }catch(err){
+    console.error('Erro ao ler arquivo:', err);
+    statusEl.textContent = 'Falha ao ler o arquivo: ' + String(err.message||err);
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+async function saveOrder(){
+  const clientId=document.getElementById('orderClient').value;
+  const client=clients.find(c=>String(c.ID)===String(clientId));
+  const raw=document.getElementById('orderOriginalText').value.trim();
+  if(!client){showToast('Selecione o cliente.');return;}
+  const itemCount = Math.max(1, Number(document.getElementById('orderItemCount').value)||1);
+  let separator = document.getElementById('orderSeparator').value;
+  if(separator==='__novo__'){
+    separator = document.getElementById('orderNewSeparator').value.trim();
+  }
+  const isNewSeparator = separator && !separatorsList.includes(separator);
+  const o={
+    ID: nextOrderId(), ClienteID: client.ID, Cliente: client.Nome, Telefone: client.Telefone,
+    Tipo: document.getElementById('orderType').value, Prioridade: document.getElementById('orderPriority').value,
+    Status: 0, RecebidoEm: new Date().toISOString(), InicioSeparacao:'', FimColeta:'', CheckoutFinalizado:'', SaidaLoja:'', ClienteRecebeu:'',
+    PedidoOriginal: raw, Separador: separator, QtdItens:itemCount, SlaMinutos:'', Observacao:'', LojaID: currentSession.loja
+  };
+  orders.push(o);
+  if(isNewSeparator) separatorsList.push(separator);
+  pendingSaveIds.add(o.ID);
+  closeModal('orderModal'); renderAll();
+  const res=await api('saveOrder', o);
+  pendingSaveIds.delete(o.ID);
+  if(!res.ok){
+    orders=orders.filter(x=>x.ID!==o.ID);
+    renderAll();
+    alert('Não foi possível salvar o pedido na planilha (falha de conexão com o Apps Script). O pedido NÃO foi criado — verifique sua internet ou a URL do Apps Script e tente novamente.');
+    return;
+  }
+  if(isNewSeparator) await api('addSeparator', {nome:separator});
+  showToast('Pedido salvo.');
+}
+
+function openClientModal(){
+  document.getElementById('clientModalTitle').textContent='Cadastrar cliente';
+  document.getElementById('clientEditId').value='';
+  ['clientName','clientPhone','clientDistrict','clientAddress'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('clientCity').value='Barra do Garças - MT';
+  document.getElementById('clientType').value='';
+  document.getElementById('clientIsNew').checked=true;
+  openModal('clientModal');
+}
+function editClient(id){
+  const c=clients.find(x=>String(x.ID)===String(id)); if(!c) return;
+  document.getElementById('clientModalTitle').textContent='Editar cliente';
+  document.getElementById('clientEditId').value=c.ID;
+  document.getElementById('clientName').value=c.Nome||'';
+  document.getElementById('clientPhone').value=c.Telefone||'';
+  document.getElementById('clientType').value=c.Tipo||'';
+  document.getElementById('clientDistrict').value=c.Bairro||'';
+  document.getElementById('clientCity').value=c.Cidade||'';
+  document.getElementById('clientAddress').value=c.Endereco||'';
+  document.getElementById('clientIsNew').checked = c.ClienteNovo==='Sim';
+  openModal('clientModal');
+}
+async function deleteClient(id){
+  const linkedOrders = orders.filter(o=>String(o.ClienteID)===String(id)).length;
+  const client = clients.find(c=>String(c.ID)===String(id));
+  const msg = linkedOrders>0
+    ? `${client?client.Nome:id} possui ${linkedOrders} pedido(s) registrado(s). Excluir o cliente NÃO apaga os pedidos, mas eles perderão o vínculo com o cadastro. Deseja continuar?`
+    : `Excluir o cliente ${client?client.Nome:id} definitivamente?`;
+  if(!confirm(msg)) return;
+  clients=clients.filter(x=>String(x.ID)!==String(id));
+  renderAll();
+  const res=await api('deleteClient',{id});
+  if(!res.ok) showToast('Falha ao excluir cliente na planilha'); else showToast('Cliente excluído.');
+}
+async function saveClient(){
+  const name=document.getElementById('clientName').value.trim();
+  const phone=document.getElementById('clientPhone').value.trim();
+  const clientTypeValue=document.getElementById('clientType').value;
+  if(!name||!phone){showToast('Preencha nome e telefone.');return;}
+  if(!clientTypeValue){showToast('Selecione o tipo do cliente.');return;}
+  const editId=document.getElementById('clientEditId').value;
+  const existing = editId ? clients.find(x=>String(x.ID)===String(editId)) : null;
+  const c={
+    ID: editId||nextClientId(), Nome:name, Telefone:phone, Tipo:document.getElementById('clientType').value,
+    Bairro:document.getElementById('clientDistrict').value, Cidade:document.getElementById('clientCity').value, Endereco:document.getElementById('clientAddress').value,
+    ClienteNovo: document.getElementById('clientIsNew').checked ? 'Sim' : 'Não',
+    CriadoEm: existing?.CriadoEm || new Date().toISOString(),
+    LojaID: existing?.LojaID || currentSession.loja
+  };
+  const idx=clients.findIndex(x=>String(x.ID)===String(c.ID));
+  const wasNew = idx<0;
+  if(idx>=0) clients[idx]=c; else clients.push(c);
+  pendingSaveIds.add(c.ID);
+  closeModal('clientModal'); renderAll();
+  const res=await api('saveClient', c);
+  pendingSaveIds.delete(c.ID);
+  if(!res.ok){
+    if(wasNew) clients=clients.filter(x=>x.ID!==c.ID);
+    renderAll();
+    alert('Não foi possível salvar o cliente na planilha (falha de conexão com o Apps Script). Verifique sua internet ou a URL do Apps Script e tente novamente.');
+  } else {
+    showToast('Cliente salvo.');
+  }
+}
+
+function openDetail(id){
+  selectedDetailId=id;
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  document.getElementById('detailContent').innerHTML = stages.map(st=>`
+    <div class="field" style="margin-bottom:12px"><label>${st.title}</label><input type="datetime-local" id="dt-${st.key}" value="${toLocalInput(o[st.key])}"></div>
+  `).join('');
+  document.getElementById('saveTimesBtn').onclick=()=>saveTimes(id);
+  document.getElementById('deleteOrderBtn').onclick=()=>deleteOrder(id);
+  openModal('detailModal');
+}
+function toLocalInput(iso){ if(!iso) return ''; const d=new Date(iso); const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+async function saveTimes(id){
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  stages.forEach(st=>{ const v=document.getElementById('dt-'+st.key).value; o[st.key]= v? new Date(v).toISOString() : ''; });
+  closeModal('detailModal');
+  await persistOrder(o);
+  showToast('Horários atualizados.');
+}
+async function deleteOrder(id){
+  if(!confirm('Excluir este pedido definitivamente?')) return;
+  orders=orders.filter(x=>String(x.ID)!==String(id));
+  closeModal('detailModal'); renderAll();
+  await api('deleteOrder',{id});
+  showToast('Pedido excluído.');
+}
+async function quickDeleteOrder(id){
+  if(!confirm(`Excluir o pedido ${id} definitivamente?`)) return;
+  orders=orders.filter(x=>String(x.ID)!==String(id));
+  renderAll();
+  const res=await api('deleteOrder',{id});
+  if(!res.ok) showToast('Falha ao excluir pedido na planilha'); else showToast('Pedido excluído.');
+}
+async function togglePriority(id){
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  o.Prioridade = o.Prioridade==='Urgente' ? 'Normal' : 'Urgente';
+  renderAll();
+  const res=await api('saveOrder', o);
+  if(!res.ok){
+    console.error('Falha ao atualizar prioridade:', res.error || res);
+    showToast('Falha ao atualizar prioridade na planilha' + (res.error ? ': '+String(res.error).slice(0,120) : ''));
+  }
+  else showToast(o.Prioridade==='Urgente' ? `Pedido ${id} marcado como URGENTE.` : `Pedido ${id} voltou a ser Normal.`);
+}
+
+function openItems(id){
+  selectedItemsOrderId=id;
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  document.getElementById('originalOrderText').textContent=o.PedidoOriginal||'Nenhum texto de WhatsApp foi colado para este pedido.';
+  ['changeQty','changeOriginal','changeResult','changeReason'].forEach(id2=>document.getElementById(id2).value='');
+  renderChangesTable();
+  openModal('itemsModal');
+}
+function renderChangesTable(){
+  const list=changes.filter(c=>String(c.PedidoID)===String(selectedItemsOrderId)).sort((a,b)=>new Date(b.Data)-new Date(a.Data));
+  document.getElementById('changesBody').innerHTML = list.map(c=>{
+    const cls = c.Tipo==='Cancelamento'?'cancel':(c.Tipo==='Inclusão'?'add':'replace');
+    return `<tr><td>${new Date(c.Data).toLocaleString('pt-BR')}</td><td><span class="change-type ${cls}">${c.Tipo}</span></td><td>${c.Quantidade||''}</td><td>${c.ProdutoOriginal||''}</td><td>${c.ProdutoResultado||''}</td><td>${c.Motivo||''}</td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="empty">Nenhuma alteração registrada</td></tr>';
+}
+async function addChange(){
+  const c={
+    ID:'ALT-'+Date.now(), PedidoID: selectedItemsOrderId, Data:new Date().toISOString(),
+    Tipo: document.getElementById('changeType').value, ProdutoOriginal: document.getElementById('changeOriginal').value,
+    ProdutoResultado: document.getElementById('changeResult').value, Quantidade: document.getElementById('changeQty').value,
+    Motivo: document.getElementById('changeReason').value
+  };
+  changes.push(c); renderChangesTable();
+  ['changeQty','changeOriginal','changeResult','changeReason'].forEach(id=>document.getElementById(id).value='');
+  const res=await api('addChange', c);
+  if(!res.ok) showToast('Falha ao registrar alteração na planilha'); else showToast('Alteração registrada.');
+}
+
+function openAssignment(id){
+  selectedAssignmentOrderId=id;
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  const knownSeparators=dedupePreferClean([...separatorsList, ...orders.map(x=>String(x.Separador||'').trim())].filter(Boolean))
+    .sort((a,b)=>a.localeCompare(b,'pt-BR',{sensitivity:'base'}));
+  const current=String(o.Separador||'').trim();
+  const options=[...new Set([...knownSeparators, ...(current?[current]:[])])];
+  document.getElementById('assignmentSeparator').innerHTML =
+    '<option value="">Selecione o separador...</option>' +
+    options.map(s=>`<option value="${s}" ${s===current?'selected':''}>${s}</option>`).join('') +
+    '<option value="__novo__">＋ Cadastrar separador...</option>';
+  document.getElementById('assignmentNewSeparatorField').style.display='none';
+  document.getElementById('assignmentNewSeparator').value='';
+  document.getElementById('assignmentItemCount').value=o.QtdItens||1;
+  const sla=Number(o.SlaMinutos)||300;
+  document.getElementById('assignmentSlaHours').value=Math.floor(sla/60);
+  document.getElementById('assignmentSlaMinutes').value=sla%60;
+  document.getElementById('assignmentNote').value=o.Observacao||'';
+  openModal('assignmentModal');
+  setTimeout(()=>document.getElementById('assignmentSeparator').focus(),50);
+}
+function onAssignmentSeparatorChange(){
+  const v=document.getElementById('assignmentSeparator').value;
+  document.getElementById('assignmentNewSeparatorField').style.display = v==='__novo__' ? 'block' : 'none';
+}
+async function saveAssignment(){
+  const o=orders.find(x=>String(x.ID)===String(selectedAssignmentOrderId)); if(!o) return;
+  let separator=document.getElementById('assignmentSeparator').value;
+  if(separator==='__novo__'){
+    separator=document.getElementById('assignmentNewSeparator').value.trim();
+  }
+  const isNewSeparator = separator && !separatorsList.includes(separator);
+  o.Separador=separator;
+  o.QtdItens=Number(document.getElementById('assignmentItemCount').value)||1;
+  const h=Number(document.getElementById('assignmentSlaHours').value)||0, m=Number(document.getElementById('assignmentSlaMinutes').value)||0;
+  o.SlaMinutos=h*60+m;
+  o.Observacao=document.getElementById('assignmentNote').value;
+  if(isNewSeparator) separatorsList.push(separator);
+  closeModal('assignmentModal');
+  await persistOrder(o);
+  if(isNewSeparator) await api('addSeparator', {nome:separator});
+  showToast('Separador e SLA salvos.');
+}
+
+function openDailySlaModal(){
+  document.getElementById('dailySlaDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('dailySlaMinutes').value=300;
+  document.getElementById('dailySlaNote').value='';
+  openModal('dailySlaModal');
+}
+async function saveDailySla(){
+  const s={Data:document.getElementById('dailySlaDate').value, Minutos:Number(document.getElementById('dailySlaMinutes').value)||300, Observacao:document.getElementById('dailySlaNote').value};
+  const idx=dailySlas.findIndex(d=>String(d.Data).slice(0,10)===s.Data);
+  if(idx>=0) dailySlas[idx]=s; else dailySlas.push(s);
+  closeModal('dailySlaModal'); renderDailySla();
+  const res=await api('saveDailySla', s);
+  if(!res.ok) showToast('Falha ao salvar SLA do dia'); else showToast('SLA do dia salvo.');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+// ===== EXPORTAÇÃO EXCEL (xlsx nativo, sem dependências externas) =====
+function exportNewClientsExcel(){
+  const list = clientsInDateRange().filter(c=>c.ClienteNovo==='Sim')
+    .slice().sort((a,b)=>new Date(a.CriadoEm||0)-new Date(b.CriadoEm||0));
+  if(list.length===0){ showToast('Nenhum cliente novo encontrado no período filtrado.'); return; }
+  const header=['ID','Nome','Telefone','Tipo','Bairro','Cidade','Endereco','Cadastrado em'];
+  const rows=[header, ...list.map(c=>[c.ID,c.Nome,c.Telefone,c.Tipo,c.Bairro,c.Cidade,c.Endereco, c.CriadoEm?new Date(c.CriadoEm).toLocaleDateString('pt-BR'):''])];
+  const blob=makeXlsx([{name:'Clientes novos', rows, widths:[14,28,16,16,20,22,32,16], headerRows:[0]}]);
+  const url=URL.createObjectURL(new Blob([blob],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  const a=document.createElement('a'); a.href=url; a.download=`clientes_novos_${new Date().toISOString().slice(0,10)}.xlsx`; a.click();
+  URL.revokeObjectURL(url);
+}
+function exportExcel(){
+  const list=filteredOrders();
+  const pedidosHeader=['ID','Cliente','Telefone','Tipo','Prioridade','Separador','Qtd Itens','SLA (min)','Recebido','Início separação','Fim coleta','Checkout','Saída','Entregue'];
+  const pedidosRows=[pedidosHeader, ...list.map(o=>[o.ID,o.Cliente,o.Telefone,o.Tipo,o.Prioridade,o.Separador,o.QtdItens,o.SlaMinutos,o.RecebidoEm,o.InicioSeparacao,o.FimColeta,o.CheckoutFinalizado,o.SaidaLoja,o.ClienteRecebeu])];
+  const clientesHeader=['ID','Nome','Telefone','Tipo','Bairro','Cidade','Endereco','Cliente novo','Cadastrado em'];
+  const clientesRows=[clientesHeader, ...clients.map(c=>[c.ID,c.Nome,c.Telefone,c.Tipo,c.Bairro,c.Cidade,c.Endereco,c.ClienteNovo||'Não',c.CriadoEm?new Date(c.CriadoEm).toLocaleDateString('pt-BR'):''])];
+  const alteracoesHeader=['ID','PedidoID','Data','Tipo','Produto original','Produto resultado','Quantidade','Motivo'];
+  const alteracoesRows=[alteracoesHeader, ...changes.map(c=>[c.ID,c.PedidoID,c.Data,c.Tipo,c.ProdutoOriginal,c.ProdutoResultado,c.Quantidade,c.Motivo])];
+  const blob=makeXlsx([
+    {name:'Pedidos', rows:pedidosRows, widths:[14,26,16,12,12,20,10,10,20,20,20,20,20,20], headerRows:[0]},
+    {name:'Clientes', rows:clientesRows, widths:[14,28,16,16,20,22,32,12,16], headerRows:[0]},
+    {name:'Alteracoes', rows:alteracoesRows, widths:[16,14,20,16,26,26,12,32], headerRows:[0]}
+  ]);
+  const url=URL.createObjectURL(new Blob([blob],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  const a=document.createElement('a'); a.href=url; a.download=`televendas_${new Date().toISOString().slice(0,10)}.xlsx`; a.click();
+  URL.revokeObjectURL(url);
+}
+function makeXlsx(sheets){
+  const files={};const now=new Date().toISOString();
+  files['[Content_Types].xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`;
+  files['_rels/.rels']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`;
+  files['docProps/core.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:creator>Painel de Televendas</dc:creator><cp:lastModifiedBy>Painel de Televendas</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${now}</dcterms:modified></cp:coreProperties>`;
+  files['docProps/app.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Painel de Televendas</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop><HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Planilhas</vt:lpstr></vt:variant><vt:variant><vt:i4>${sheets.length}</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size="${sheets.length}" baseType="lpstr">${sheets.map(s=>`<vt:lpstr>${xmlEscape(s.name)}</vt:lpstr>`).join('')}</vt:vector></TitlesOfParts></Properties>`;
+  files['xl/workbook.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="24000" windowHeight="12000"/></bookViews><sheets>${sheets.map((s,i)=>`<sheet name="${xmlEscape(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets><calcPr calcId="191029"/></workbook>`;
+  files['xl/_rels/workbook.xml.rels']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+  files['xl/styles.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="0.00"/></numFmts><fonts count="3"><font><sz val="10"/><name val="Calibri"/><family val="2"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="10"/><name val="Calibri"/></font><font><b/><color rgb="FF1B2A4A"/><sz val="14"/><name val="Calibri"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1B2A4A"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFC400"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD9DEE7"/></left><right style="thin"><color rgb="FFD9DEE7"/></right><top style="thin"><color rgb="FFD9DEE7"/></top><bottom style="thin"><color rgb="FFD9DEE7"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFill="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFill="1" applyFont="1" applyBorder="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+  sheets.forEach((s,i)=>files[`xl/worksheets/sheet${i+1}.xml`]=sheetXml(s));
+  return zipStore(files);
+}
+function sheetXml(sheet){
+  const rows=sheet.rows||[],headerRows=new Set(sheet.headerRows||[]),cols=(sheet.widths||[]).map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('');
+  const body=rows.map((row,r)=>`<row r="${r+1}"${headerRows.has(r)?' ht="25" customHeight="1"':''}>${row.map((cell,c)=>cellXml(cell,r,c,headerRows.has(r))).join('')}</row>`).join('');
+  const maxCols=Math.max(1,...rows.map(r=>r.length));const dimension=`A1:${colName(maxCols-1)}${Math.max(1,rows.length)}`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="${dimension}"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>${cols}</cols><sheetData>${body}</sheetData><autoFilter ref="A1:${colName(maxCols-1)}${Math.max(1,rows.length)}"/><pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`;
+}
+function cellXml(cell,r,c,isHeader){
+  const ref=`${colName(c)}${r+1}`;let value=cell,style=isHeader?1:0,type='s';
+  if(value===null||value===undefined||value==='')return `<c r="${ref}" s="${style}"/>`;
+  if(typeof value==='number')return `<c r="${ref}" s="${style}"><v>${Number(value)}</v></c>`;
+  return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${xmlEscape(String(value))}</t></is></c>`;
+}
+function colName(n){let s='';for(n++;n>0;n=Math.floor((n-1)/26))s=String.fromCharCode(65+(n-1)%26)+s;return s;}
+function xmlEscape(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+function zipStore(files){
+  const enc=new TextEncoder(),entries=[],chunks=[];let offset=0;const dt=dosDateTime(new Date());
+  Object.entries(files).forEach(([name,content])=>{const n=enc.encode(name),d=typeof content==='string'?enc.encode(content):content,crc=crc32(d);const local=new Uint8Array(30+n.length+d.length),v=new DataView(local.buffer);let p=0;v.setUint32(p,0x04034b50,true);p+=4;v.setUint16(p,20,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,dt.time,true);p+=2;v.setUint16(p,dt.date,true);p+=2;v.setUint32(p,crc,true);p+=4;v.setUint32(p,d.length,true);p+=4;v.setUint32(p,d.length,true);p+=4;v.setUint16(p,n.length,true);p+=2;v.setUint16(p,0,true);p+=2;local.set(n,p);local.set(d,p+n.length);chunks.push(local);entries.push({n,d,crc,offset});offset+=local.length});
+  const centralStart=offset;entries.forEach(e=>{const c=new Uint8Array(46+e.n.length),v=new DataView(c.buffer);let p=0;v.setUint32(p,0x02014b50,true);p+=4;v.setUint16(p,20,true);p+=2;v.setUint16(p,20,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,dt.time,true);p+=2;v.setUint16(p,dt.date,true);p+=2;v.setUint32(p,e.crc,true);p+=4;v.setUint32(p,e.d.length,true);p+=4;v.setUint32(p,e.d.length,true);p+=4;v.setUint16(p,e.n.length,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint32(p,0,true);p+=4;v.setUint32(p,e.offset,true);p+=4;c.set(e.n,p);chunks.push(c);offset+=c.length});
+  const centralSize=offset-centralStart,end=new Uint8Array(22),v=new DataView(end.buffer);let p=0;v.setUint32(p,0x06054b50,true);p+=4;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,entries.length,true);p+=2;v.setUint16(p,entries.length,true);p+=2;v.setUint32(p,centralSize,true);p+=4;v.setUint32(p,centralStart,true);p+=4;v.setUint16(p,0,true);chunks.push(end);const total=chunks.reduce((a,b)=>a+b.length,0),out=new Uint8Array(total);let pos=0;chunks.forEach(ch=>{out.set(ch,pos);pos+=ch.length});return out;
+}
+function dosDateTime(d){let year=Math.max(1980,d.getFullYear());return{time:(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),date:((year-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate()};}
+const CRC_TABLE=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t;})();
+function crc32(bytes){let c=0xffffffff;for(let i=0;i<bytes.length;i++)c=CRC_TABLE[(c^bytes[i])&255]^(c>>>8);return(c^0xffffffff)>>>0;}
+
+// ===== CLOCK =====
+// ===================== PAINEL DO SEPARADOR =====================
+
+function parseItemsFromOrderText(text){
+  if(!text) return [];
+  const lines = String(text).split('\n').map(l=>l.trim()).filter(Boolean);
+  const items = [];
+  const skipPatterns = /^(quantidade\s+descri[cç][aã]o|almoxarifado|cantina)$/i;
+  lines.forEach((line,i)=>{
+    if(skipPatterns.test(line)) return;
+    // tenta capturar "24 UND DETERGENTE" ou "24  DETERGENTE" (quantidade no começo da linha)
+    const m = line.match(/^(\d+)\s*(un|und|un\.|kg|l|lt|cx|pct|pç|pc)?\s+(.+)$/i);
+    if(m){
+      items.push({id:'it'+i, qtd:m[1]+(m[2]?(' '+m[2].toUpperCase()):''), texto:m[3].trim(), separado:false});
+    } else if(!/^\d+$/.test(line)) {
+      // linha sem quantidade reconhecida — ainda entra como item, sem quantidade destacada
+      items.push({id:'it'+i, qtd:'', texto:line, separado:false});
+    }
+  });
+  return items;
+}
+
+function getOrderItems(o){
+  if(o.ItensJson){
+    try{ const parsed = JSON.parse(o.ItensJson); if(Array.isArray(parsed) && parsed.length) return parsed; }catch(e){}
+  }
+  return parseItemsFromOrderText(o.PedidoOriginal);
+}
+
+function ordersForSeparator(){
+  const myName = String(currentSession.nome||'').trim().toLowerCase();
+  return orders.filter(o=>{
+    if(!o.Separador) return false;
+    if(String(o.Separador).trim().toLowerCase()!==myName) return false;
+    return inferStatus(o)===1; // "Em separação"
+  });
+}
+
+function renderSeparatorPanel(){
+  if(!currentSession || currentSession.perfil!=='Separador') return;
+  document.getElementById('separatorClock').textContent = new Date().toLocaleTimeString('pt-BR');
+  document.getElementById('separatorHeaderSub').textContent = `${currentSession.nome} — pedidos em separação agora`;
+
+  const myOrders = ordersForSeparator();
+  const now = Date.now();
+
+  let totalItems=0, totalDone=0;
+  myOrders.forEach(o=>{
+    const items = getOrderItems(o);
+    totalItems += items.length;
+    totalDone += items.filter(it=>it.separado).length;
+  });
+  document.getElementById('separatorKpis').innerHTML = [
+    {label:'Pedidos em separação', value: myOrders.length, sub:'Atribuídos a você agora', cls:''},
+    {label:'Itens separados', value: `${totalDone} / ${totalItems}`, sub: totalItems? Math.round(totalDone/totalItems*100)+'% concluído' : 'Sem itens', cls:'good'}
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+
+  document.getElementById('separatorOrdersList').innerHTML = myOrders.map(o=>{
+    const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+    const items = getOrderItems(o);
+    const done = items.filter(it=>it.separado).length;
+    const total = items.length;
+    const pct = total ? Math.round(done/total*100) : 0;
+    const startedAt = o.InicioSeparacao ? new Date(o.InicioSeparacao).getTime() : now;
+    const elapsedMs = now - startedAt;
+    const h=Math.floor(elapsedMs/3600000), m=Math.floor((elapsedMs%3600000)/60000), s=Math.floor((elapsedMs%60000)/1000);
+    const timerTxt = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const allDone = total>0 && done===total;
+
+    const itemsHtml = items.length
+      ? items.map(it=>`
+          <div class="sep-item-row ${it.separado?'done':''}">
+            <div class="sep-item-check" onclick="toggleSepItem('${o.ID}','${it.id}')">${it.separado?'✓':''}</div>
+            <div class="sep-item-text" onclick="toggleSepItem('${o.ID}','${it.id}')">${it.texto}</div>
+            ${it.qtd?`<div class="sep-item-qty" onclick="toggleSepItem('${o.ID}','${it.id}')">${it.qtd}</div>`:''}
+            <button class="sep-item-edit-btn" onclick="event.stopPropagation();openSepEditItem('${o.ID}','${it.id}')" title="Editar / trocar item">✎</button>
+          </div>
+        `).join('')
+      : `<div class="sep-no-items">Não foi possível identificar itens automaticamente no texto do pedido. Adicione manualmente abaixo, ou finalize direto se preferir controlar só pela quantidade total.</div>`;
+
+    return `<div class="sep-order-card ${o.Prioridade==='Urgente'?'priority':''}">
+      <div class="sep-order-head">
+        <div>
+          <div class="sep-order-client">${client?client.Nome:(o.Cliente||'Cliente')} <span style="font-size:12px;color:var(--muted);font-weight:700">— ${o.ID}</span></div>
+          <div class="sep-order-meta">${o.Tipo||''} ${o.Prioridade==='Urgente'?'· <b style="color:var(--red)">URGENTE</b>':''} · ${total} item(ns) no pedido</div>
+        </div>
+        <div class="sep-order-timer"><div class="label">Tempo em separação</div><div class="value">${timerTxt}</div></div>
+      </div>
+      <div class="sep-progress-wrap">
+        <div class="sep-progress-label"><span>${done} de ${total} itens separados</span><span>${pct}%</span></div>
+        <div class="sep-progress-track"><div class="sep-progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="sep-items-list">
+        ${itemsHtml}
+        <div class="sep-add-item-row">
+          <input type="text" id="sepNewItem-${o.ID}" placeholder="Adicionar item manualmente...">
+          <button onclick="addSepItem('${o.ID}')">＋ Adicionar</button>
+        </div>
+      </div>
+      <div class="sep-actions">
+        <button class="sep-finish-btn" onclick="finishSeparation('${o.ID}')" ${(!allDone && total>0)?'':''}>
+          ${allDone||total===0 ? '✓ Finalizar separação' : `Finalizar separação (${done}/${total} — pode finalizar mesmo assim)`}
+        </button>
+      </div>
+    </div>`;
+  }).join('') || `<div class="panel" style="text-align:center;color:var(--muted);padding:40px">Nenhum pedido em separação atribuído a você no momento. Assim que um pedido entrar em "Em separação" com seu nome, ele aparece aqui automaticamente.</div>`;
+}
+
+async function toggleSepItem(orderId, itemId){
+  const o = orders.find(x=>String(x.ID)===String(orderId));
+  if(!o) return;
+  const items = getOrderItems(o);
+  const item = items.find(it=>it.id===itemId);
+  if(!item) return;
+  item.separado = !item.separado;
+  o.ItensJson = JSON.stringify(items);
+  renderSeparatorPanel();
+  await api('saveOrder', o);
+}
+
+let sepEditingOrderId=null, sepEditingItemId=null;
+function openSepEditItem(orderId, itemId){
+  const o = orders.find(x=>String(x.ID)===String(orderId));
+  if(!o) return;
+  const items = getOrderItems(o);
+  const item = items.find(it=>it.id===itemId);
+  if(!item) return;
+  sepEditingOrderId=orderId; sepEditingItemId=itemId;
+  document.getElementById('sepEditItemQtd').value = item.qtd||'';
+  document.getElementById('sepEditItemTexto').value = item.texto||'';
+  openModal('sepEditItemModal');
+}
+async function saveSepItemEdit(){
+  const o = orders.find(x=>String(x.ID)===String(sepEditingOrderId));
+  if(!o) return;
+  const texto = document.getElementById('sepEditItemTexto').value.trim();
+  if(!texto){ showToast('Informe a descrição do item.'); return; }
+  const items = getOrderItems(o);
+  const item = items.find(it=>it.id===sepEditingItemId);
+  if(!item) return;
+  item.texto = texto;
+  item.qtd = document.getElementById('sepEditItemQtd').value.trim();
+  o.ItensJson = JSON.stringify(items);
+  closeModal('sepEditItemModal');
+  renderSeparatorPanel();
+  renderLiveSeparation();
+  const res = await api('saveOrder', o);
+  if(res.ok) showToast('Item atualizado.'); else showToast('Falha ao salvar. Tente novamente.');
+}
+async function removeSepItem(){
+  const o = orders.find(x=>String(x.ID)===String(sepEditingOrderId));
+  if(!o) return;
+  if(!confirm('Remover este item da lista de separação?')) return;
+  let items = getOrderItems(o);
+  items = items.filter(it=>it.id!==sepEditingItemId);
+  o.ItensJson = JSON.stringify(items);
+  closeModal('sepEditItemModal');
+  renderSeparatorPanel();
+  renderLiveSeparation();
+  const res = await api('saveOrder', o);
+  if(res.ok) showToast('Item removido.'); else showToast('Falha ao salvar. Tente novamente.');
+}
+
+async function addSepItem(orderId){
+  const input = document.getElementById('sepNewItem-'+orderId);
+  const texto = input.value.trim();
+  if(!texto) return;
+  const o = orders.find(x=>String(x.ID)===String(orderId));
+  if(!o) return;
+  const items = getOrderItems(o);
+  items.push({id:'manual'+Date.now(), qtd:'', texto, separado:false});
+  o.ItensJson = JSON.stringify(items);
+  input.value='';
+  renderSeparatorPanel();
+  await api('saveOrder', o);
+}
+
+function finishSeparation(orderId){
+  const o = orders.find(x=>String(x.ID)===String(orderId));
+  if(!o) return;
+  const items = getOrderItems(o);
+  const pending = items.filter(it=>!it.separado);
+  if(pending.length===0){
+    doFinishSeparation(orderId);
+    return;
+  }
+  document.getElementById('sepFinishPendingCount').textContent = pending.length;
+  document.getElementById('sepFinishPendingList').innerHTML = pending.map(it=>`<li>${it.qtd?it.qtd+' — ':''}${it.texto}</li>`).join('');
+  document.getElementById('sepFinishAckCheckbox').checked = false;
+  const btn = document.getElementById('sepFinishConfirmBtn');
+  const newBtn = btn.cloneNode(true); // limpa listeners de aberturas anteriores
+  newBtn.disabled = true;
+  btn.parentNode.replaceChild(newBtn, btn);
+  document.getElementById('sepFinishAckCheckbox').onchange = (e)=>{ newBtn.disabled = !e.target.checked; };
+  newBtn.addEventListener('click', ()=>{
+    closeModal('sepFinishConfirmModal');
+    doFinishSeparation(orderId);
+  });
+  openModal('sepFinishConfirmModal');
+}
+function doFinishSeparation(orderId){
+  setStage(orderId, 2); // avança para "Coleta finalizada", mesma lógica usada no Kanban (inclui notificação ao cliente, exceto para Separador)
+  renderSeparatorPanel();
+  showToast('Separação finalizada! Pedido seguiu para a próxima etapa.');
+}
+
+function tickClock(){document.getElementById('liveClock').textContent=new Date().toLocaleTimeString('pt-BR');}
+setInterval(tickClock,1000); tickClock();
+setInterval(()=>{ if(document.getElementById('view-kanban').classList.contains('active')) renderKanban(); },1000);
+setInterval(()=>{ if(document.getElementById('view-separation') && document.getElementById('view-separation').classList.contains('active')) renderLiveSeparation(); },1000);
+window.addEventListener('click',e=>{
+  if(!e.target.classList.contains('modal-backdrop')) return;
+  const id=e.target.id;
+  // modais com formulário: exige clique no × ou em Cancelar, evitando perda acidental de dados ao clicar fora
+  const protectedModals=['orderModal','clientModal','occurrenceModal','assignmentModal','detailModal','adminResetPasswordModal','adminCreateUserModal','adminEditUserModal','adminEditLojaModal','sepFinishConfirmModal','sepEditItemModal'];
+  if(protectedModals.includes(id)) return;
+  e.target.classList.remove('open');
+});
+
+// ===================== AUTENTICAÇÃO =====================
+const SESSION_STORAGE_KEY = 'nilo_tv_session';
+
+function showAuthCard(id){
+  ['authCardLogin','authCardRegister','authCard2FA','authCardForgot','authCardReset','authCardStoreSelect'].forEach(cid=>{
+    document.getElementById(cid).style.display = cid===id ? 'block' : 'none';
+  });
+  ['loginError','registerError','registerSuccess','twofaError','forgotError','forgotSuccess','resetError'].forEach(eid=>{
+    const el=document.getElementById(eid); if(el){ el.classList.remove('show'); el.textContent=''; }
+  });
+}
+function showAuthMsg(elId, msg, isError){
+  const el=document.getElementById(elId);
+  el.textContent=msg; el.classList.add('show');
+}
+
+async function doLogin(){
+  const usuario=document.getElementById('loginUsuario').value.trim();
+  const senha=document.getElementById('loginSenha').value;
+  if(!usuario||!senha){ showAuthMsg('loginError','Preencha usuário e senha.'); return; }
+  const res = await api('login', {usuario, senha});
+  if(res.ok){
+    applySession(res.token, res.user);
+  } else if(res.reason==='needs2fa'){
+    pendingLoginUsuario = usuario;
+    showAuthCard('authCard2FA');
+  } else {
+    showAuthMsg('loginError', res.error || 'Não foi possível entrar.');
+  }
+}
+
+async function doVerify2FA(){
+  const codigo=document.getElementById('twofaCode').value.trim();
+  if(!codigo){ showAuthMsg('twofaError','Informe o código recebido por e-mail.'); return; }
+  const res = await api('verifyTwoFactor', {usuario: pendingLoginUsuario, codigo});
+  if(res.ok){
+    applySession(res.token, res.user);
+  } else {
+    showAuthMsg('twofaError', res.error || 'Código inválido.');
+  }
+}
+
+async function doRegister(){
+  const nome=document.getElementById('regNome').value.trim();
+  const telefone=document.getElementById('regTelefone').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const usuario=document.getElementById('regUsuario').value.trim();
+  const senha=document.getElementById('regSenha').value;
+  const senhaConfirm=document.getElementById('regSenhaConfirm').value;
+  if(!nome||!telefone||!email||!usuario||!senha){ showAuthMsg('registerError','Preencha todos os campos.'); return; }
+  if(senha!==senhaConfirm){ showAuthMsg('registerError','As senhas não coincidem.'); return; }
+  if(senha.length<6){ showAuthMsg('registerError','A senha precisa ter pelo menos 6 caracteres.'); return; }
+  const res = await api('registerUser', {nome, telefone, email, usuario, senha});
+  if(res.ok){
+    showAuthMsg('registerSuccess', res.message || 'Cadastro enviado. Aguarde a autorização do administrador.');
+    ['regNome','regTelefone','regEmail','regUsuario','regSenha','regSenhaConfirm'].forEach(id=>document.getElementById(id).value='');
+  } else {
+    showAuthMsg('registerError', res.error || 'Não foi possível concluir o cadastro.');
+  }
+}
+
+async function doForgotPassword(){
+  const usuario=document.getElementById('forgotUsuario').value.trim();
+  if(!usuario){ showAuthMsg('forgotError','Informe seu usuário.'); return; }
+  const baseUrl = window.location.origin + window.location.pathname;
+  const res = await api('requestPasswordReset', {usuario, baseUrl});
+  showAuthMsg('forgotSuccess', res.message || 'Se o usuário existir, um e-mail foi enviado.');
+}
+
+async function doResetPassword(){
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('reset');
+  const senha=document.getElementById('resetSenha').value;
+  const senhaConfirm=document.getElementById('resetSenhaConfirm').value;
+  if(!senha||senha.length<6){ showAuthMsg('resetError','A senha precisa ter pelo menos 6 caracteres.'); return; }
+  if(senha!==senhaConfirm){ showAuthMsg('resetError','As senhas não coincidem.'); return; }
+  const res = await api('resetPassword', {token, novaSenha: senha});
+  if(res.ok){
+    alert('Senha redefinida com sucesso! Faça login com sua nova senha.');
+    window.history.replaceState({}, '', window.location.pathname);
+    showAuthCard('authCardLogin');
+  } else {
+    showAuthMsg('resetError', res.error || 'Não foi possível redefinir a senha.');
+  }
+}
+
+function applySession(token, user){
+  currentSession = { token, id:user.id, nome:user.nome, usuario:user.usuario, perfil:user.perfil, lojasAutorizadas:user.lojasAutorizadas||[], loja:null };
+  localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentSession));
+  proceedAfterLogin();
+}
+
+async function proceedAfterLogin(){
+  // busca a lista de lojas (ação pública o suficiente pois já temos token de sessão válido)
+  const res = await api('listLojas', {});
+  let lojas = (res.ok && res.lojas) ? res.lojas : [];
+  if(!res.ok){
+    // fallback extremo (não deveria acontecer, mas evita tela em branco)
+    lojas = currentSession.lojasAutorizadas.map(id=>({ID:id, Nome:id, Status:'Ativa'}));
+  }
+  allLojasCache = lojas;
+
+  const autorizadas = currentSession.perfil==='Master'
+    ? lojas.map(l=>l.ID)             // Master enxerga todas as lojas, sempre
+    : currentSession.lojasAutorizadas;
+
+  const lojasDoUsuario = lojas.filter(l=>autorizadas.includes(l.ID));
+
+  if(lojasDoUsuario.length<=1){
+    // só uma loja (ou nenhuma cadastrada ainda) — entra direto, sem pedir escolha
+    currentSession.loja = lojasDoUsuario[0] ? lojasDoUsuario[0].ID : (currentSession.lojasAutorizadas[0]||null);
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentSession));
+    enterApp();
+  } else {
+    showStoreSelection(lojasDoUsuario);
+  }
+}
+
+function showStoreSelection(lojas){
+  document.getElementById('authScreen').style.display='flex';
+  document.getElementById('mainApp').style.display='none';
+  showAuthCard('authCardStoreSelect');
+  document.getElementById('storeSelectList').innerHTML = lojas.map(l=>
+    `<button class="store-select-btn" onclick="chooseStore('${l.ID}')" title="Clique para acessar esta loja">
+       <span class="store-select-name">🏬 ${l.Nome}</span>
+       <span class="store-select-cta">Selecionar →</span>
+     </button>`
+  ).join('');
+}
+
+function chooseStore(lojaId){
+  currentSession.loja = lojaId;
+  localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentSession));
+  enterApp();
+  // força a atualização de todas as telas com os dados já carregados, filtrados para a loja recém-escolhida
+  renderAll();
+  // e busca dados frescos da planilha em seguida, por garantia
+  suppressAutoRefreshUntil = 0;
+  loadAll();
+}
+
+function openStoreSwitcher(){
+  const lojas = allLojasCache.filter(l=>{
+    const autorizadas = currentSession.perfil==='Master' ? allLojasCache.map(x=>x.ID) : currentSession.lojasAutorizadas;
+    return autorizadas.includes(l.ID);
+  });
+  if(lojas.length<=1){ showToast('Você só tem acesso a uma loja.'); return; }
+  showStoreSelection(lojas);
+}
+
+function handleSessionExpired(){
+  currentSession = null;
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+  document.getElementById('mainApp').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+  showAuthCard('authCardLogin');
+  showAuthMsg('loginError','Sua sessão expirou. Faça login novamente.');
+}
+
+async function doLogout(){
+  if(!confirm('Deseja realmente sair?')) return;
+  await api('logout', {});
+  currentSession = null;
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+  window.location.reload();
+}
+
+function enterApp(){
+  document.getElementById('authScreen').style.display='none';
+  if(currentSession.perfil==='Separador'){
+    document.getElementById('mainApp').style.display='none';
+    document.getElementById('separatorApp').style.display='block';
+    if(!_appStarted){
+      _appStarted = true;
+      loadAll();
+      setInterval(loadAll, 20000); // painel do separador atualiza mais rápido, é operação em tempo real
+      setInterval(renderSeparatorPanel, 1000); // cronômetros
+    }
+    return;
+  }
+  document.getElementById('separatorApp').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  const lojaNome = (allLojasCache.find(l=>l.ID===currentSession.loja)||{}).Nome || currentSession.loja || '';
+  document.getElementById('userBadge').textContent = `${currentSession.nome} (${currentSession.perfil})${lojaNome?' — '+lojaNome:''}`;
+  document.getElementById('adminPanelBtn').style.display = currentSession.perfil==='Master' ? 'inline-flex' : 'none';
+  const autorizadas = currentSession.perfil==='Master' ? allLojasCache.map(l=>l.ID) : currentSession.lojasAutorizadas;
+  document.getElementById('storeSwitchBtn').style.display = autorizadas.length>1 ? 'inline-flex' : 'none';
+  const viewAllLabel = document.getElementById('viewAllStoresLabel');
+  if(viewAllLabel) viewAllLabel.style.display = currentSession.perfil==='Master' ? 'flex' : 'none';
+  const viewAllLabelInactive = document.getElementById('viewAllStoresInactiveLabel');
+  if(viewAllLabelInactive) viewAllLabelInactive.style.display = currentSession.perfil==='Master' ? 'flex' : 'none';
+  if(!_appStarted){
+    _appStarted = true;
+    loadAll();
+    setInterval(loadAll, 60000);
+  }
+}
+let _appStarted = false;
+
+// ---- Painel administrativo ----
+function switchAdminTab(tab, el){
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('adminTabUsers').style.display = tab==='users' ? 'block' : 'none';
+  document.getElementById('adminTabLojas').style.display = tab==='lojas' ? 'block' : 'none';
+  document.getElementById('adminTabLogs').style.display = tab==='logs' ? 'block' : 'none';
+}
+
+async function openAdminPanel(){
+  if(!currentSession || currentSession.perfil!=='Master'){
+    showToast('Usuário não tem permissão.');
+    return;
+  }
+  openModal('adminPanelModal');
+  await refreshAdminLojas();
+  await refreshAdminUsers();
+  await refreshAdminLogs();
+}
+
+async function refreshAdminLojas(){
+  const res = await api('adminListLojas', {});
+  if(!res.ok) return;
+  allLojasCache = res.lojas;
+  document.getElementById('adminLojasBody').innerHTML = res.lojas.map(l=>`<tr>
+    <td>${l.ID}</td><td>${l.Nome}</td><td><span class="status-pill ${l.Status==='Inativa'?'bloqueado':'ativo'}">${l.Status||'Ativa'}</span></td>
+    <td>${l.CriadoEm?new Date(l.CriadoEm).toLocaleDateString('pt-BR'):'—'}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="openEditLoja('${l.ID}')">Editar</button></td>
+  </tr>`).join('') || '<tr><td colspan="5" class="empty">Nenhuma loja cadastrada</td></tr>';
+}
+function openEditLoja(id){
+  const l = allLojasCache.find(x=>String(x.ID)===String(id));
+  if(!l){ showToast('Loja não encontrada.'); return; }
+  document.getElementById('editLojaNome').value=l.Nome||'';
+  document.getElementById('editLojaStatus').value=l.Status==='Inativa'?'Inativa':'Ativa';
+  document.getElementById('editLojaOrdem').value=l.Ordem||'';
+  document.getElementById('editLojaNome').dataset.editId=id;
+  openModal('adminEditLojaModal');
+}
+async function confirmEditLoja(){
+  const id=document.getElementById('editLojaNome').dataset.editId;
+  const nome=document.getElementById('editLojaNome').value.trim();
+  const status=document.getElementById('editLojaStatus').value;
+  const ordem=document.getElementById('editLojaOrdem').value;
+  if(!nome){ showToast('Informe o nome da loja.'); return; }
+  const res = await api('adminUpdateLoja', {id, nome, status, ordem});
+  if(res.ok){
+    closeModal('adminEditLojaModal');
+    showToast('Loja atualizada.');
+    refreshAdminLojas();
+  } else {
+    showToast(res.error || 'Falha ao atualizar loja.');
+  }
+}
+async function confirmCreateLoja(){
+  const nome = document.getElementById('newLojaNome').value.trim();
+  if(!nome){ showToast('Informe o nome da loja.'); return; }
+  const res = await api('adminCreateLoja', {nome});
+  if(res.ok){
+    document.getElementById('newLojaNome').value='';
+    showToast('Loja criada.');
+    refreshAdminLojas();
+  } else {
+    showToast(res.error || 'Falha ao criar loja.');
+  }
+}
+
+async function refreshAdminUsers(){
+  const res = await api('adminListUsers', {});
+  if(!res.ok){
+    if(res.reason==='forbidden') showToast('Usuário não tem permissão.');
+    return;
+  }
+  const users = res.users.slice().sort((a,b)=>new Date(b.CriadoEm||0)-new Date(a.CriadoEm||0));
+  adminUsersCache = users;
+  document.getElementById('adminUsersBody').innerHTML = users.map(u=>{
+    const statusClass = u.Status==='Ativo'?'ativo':(u.Status==='Pendente'?'pendente':'bloqueado');
+    const actions=[];
+    if(u.Status==='Pendente') actions.push(`<button class="btn btn-primary btn-sm" onclick="adminSetStatus('${u.ID}','Ativo')">Autorizar</button>`);
+    if(u.Status==='Ativo') actions.push(`<button class="btn btn-danger btn-sm" onclick="adminSetStatus('${u.ID}','Bloqueado')">Bloquear</button>`);
+    if(u.Status==='Bloqueado') actions.push(`<button class="btn btn-primary btn-sm" onclick="adminSetStatus('${u.ID}','Ativo')">Reativar</button>`);
+    actions.push(`<button class="btn btn-outline btn-sm" onclick="openAdminEditUser('${u.ID}')">Editar</button>`);
+    actions.push(`<button class="btn btn-outline btn-sm" onclick="openAdminResetPassword('${u.ID}','${u.Nome.replace(/'/g,"\\'")}')">Redefinir senha</button>`);
+    if(u.ID!==currentSession.id){
+      const novoPerfil = u.Perfil==='Master' ? 'Colaborador' : 'Master';
+      actions.push(`<button class="btn btn-outline btn-sm" onclick="adminSetRole('${u.ID}','${novoPerfil}')">Tornar ${novoPerfil}</button>`);
+      actions.push(`<button class="btn btn-danger btn-sm" onclick="adminDeleteUser('${u.ID}')">Excluir</button>`);
+    }
+    return `<tr>
+      <td>${u.Nome}</td><td>${u.Usuario}</td><td>${u.Telefone||''}</td><td>${u.Email||''}</td><td>${u.Perfil}</td>
+      <td>${u.Perfil==='Master'?'Todas':(u.LojasAutorizadas.map(lojaNomeById).join(', ')||'—')}</td>
+      <td><span class="status-pill ${statusClass}">${u.Status}</span></td>
+      <td>${u.CriadoEm?new Date(u.CriadoEm).toLocaleDateString('pt-BR'):'—'}</td>
+      <td>${u.UltimoAcesso?new Date(u.UltimoAcesso).toLocaleString('pt-BR'):'—'}</td>
+      <td style="white-space:normal;display:flex;gap:5px;flex-wrap:wrap">${actions.join('')}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" class="empty">Nenhum usuário cadastrado</td></tr>';
+}
+async function adminSetStatus(id, status){
+  const res = await api('adminSetUserStatus', {id, status});
+  if(res.ok){ showToast('Status atualizado.'); refreshAdminUsers(); }
+  else showToast(res.error || 'Falha ao atualizar status.');
+}
+async function adminSetRole(id, perfil){
+  if(!confirm(`Alterar perfil deste usuário para ${perfil}?`)) return;
+  const res = await api('adminSetUserRole', {id, perfil});
+  if(res.ok){ showToast('Perfil atualizado.'); refreshAdminUsers(); }
+  else showToast(res.error || 'Falha ao atualizar perfil.');
+}
+async function adminDeleteUser(id){
+  if(!confirm('Excluir este usuário definitivamente?')) return;
+  const res = await api('adminDeleteUser', {id});
+  if(res.ok){ showToast('Usuário excluído.'); refreshAdminUsers(); }
+  else showToast(res.error || 'Falha ao excluir usuário.');
+}
+let selectedResetPasswordUserId=null;
+let adminUsersCache=[];
+function renderLojaCheckboxes(containerId, selectedIds){
+  const container = document.getElementById(containerId);
+  if(allLojasCache.length===0){
+    container.innerHTML = '<span class="hint" style="margin:0">Nenhuma loja cadastrada ainda — crie uma na aba "Lojas".</span>';
+    return;
+  }
+  container.innerHTML = allLojasCache.map(l=>`
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+      <input type="checkbox" value="${l.ID}" ${selectedIds.includes(l.ID)?'checked':''} style="width:15px;height:15px">
+      ${l.Nome}
+    </label>
+  `).join('');
+}
+function readLojaCheckboxes(containerId){
+  return Array.from(document.getElementById(containerId).querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
+}
+
+function openAdminEditUser(id){
+  const u = adminUsersCache.find(x=>String(x.ID)===String(id));
+  if(!u){ showToast('Usuário não encontrado na lista atual.'); return; }
+  document.getElementById('editUserNome').value=u.Nome||'';
+  document.getElementById('editUserUsuario').value=u.Usuario||'';
+  document.getElementById('editUserPerfil').value=u.Perfil==='Master'?'Master':'Colaborador';
+  document.getElementById('editUserTelefone').value=u.Telefone||'';
+  document.getElementById('editUserEmail').value=u.Email||'';
+  document.getElementById('editUserUsuario').dataset.editId=id;
+  renderLojaCheckboxes('editUserLojasList', Array.isArray(u.LojasAutorizadas)?u.LojasAutorizadas:[]);
+  openModal('adminEditUserModal');
+}
+async function confirmAdminEditUser(){
+  const id=document.getElementById('editUserUsuario').dataset.editId;
+  const nome=document.getElementById('editUserNome').value.trim();
+  const usuario=document.getElementById('editUserUsuario').value.trim();
+  const telefone=document.getElementById('editUserTelefone').value.trim();
+  const email=document.getElementById('editUserEmail').value.trim();
+  const perfil=document.getElementById('editUserPerfil').value;
+  const lojas=readLojaCheckboxes('editUserLojasList');
+  if(!nome||!usuario){ showToast('Preencha nome e usuário.'); return; }
+  const res = await api('adminUpdateUser', {id, nome, usuario, telefone, email, perfil, lojas});
+  if(res.ok){
+    closeModal('adminEditUserModal');
+    showToast('Usuário atualizado.');
+    refreshAdminUsers();
+  } else {
+    showToast(res.error || 'Falha ao atualizar usuário.');
+  }
+}
+function openAdminResetPassword(id, nome){
+  selectedResetPasswordUserId=id;
+  document.getElementById('adminResetPasswordUserLabel').textContent = `Definindo uma nova senha para: ${nome}`;
+  document.getElementById('adminResetPasswordValue').value='';
+  document.getElementById('adminResetPasswordConfirm').value='';
+  openModal('adminResetPasswordModal');
+}
+async function confirmAdminResetPassword(){
+  const senha=document.getElementById('adminResetPasswordValue').value;
+  const confirmSenha=document.getElementById('adminResetPasswordConfirm').value;
+  if(!senha || senha.length<6){ showToast('A senha precisa ter pelo menos 6 caracteres.'); return; }
+  if(senha!==confirmSenha){ showToast('As senhas não coincidem.'); return; }
+  const res = await api('adminResetPassword', {id: selectedResetPasswordUserId, novaSenha: senha});
+  if(res.ok){
+    closeModal('adminResetPasswordModal');
+    showToast('Senha redefinida com sucesso.');
+  } else {
+    showToast(res.error || 'Falha ao redefinir a senha.');
+  }
+}
+function openAdminCreateUser(){
+  ['newUserNome','newUserUsuario','newUserTelefone','newUserEmail','newUserSenha','newUserSenhaConfirm'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('newUserPerfil').value='Colaborador';
+  document.getElementById('newUserAtivarImediatamente').checked=true;
+  renderLojaCheckboxes('newUserLojasList', []);
+  openModal('adminCreateUserModal');
+}
+async function confirmAdminCreateUser(){
+  const nome=document.getElementById('newUserNome').value.trim();
+  const usuario=document.getElementById('newUserUsuario').value.trim();
+  const telefone=document.getElementById('newUserTelefone').value.trim();
+  const email=document.getElementById('newUserEmail').value.trim();
+  const perfil=document.getElementById('newUserPerfil').value;
+  const senha=document.getElementById('newUserSenha').value;
+  const senhaConfirm=document.getElementById('newUserSenhaConfirm').value;
+  const ativarImediatamente=document.getElementById('newUserAtivarImediatamente').checked;
+  const lojas=readLojaCheckboxes('newUserLojasList');
+  if(!nome||!usuario||!senha){ showToast('Preencha nome, usuário e senha.'); return; }
+  if(senha.length<6){ showToast('A senha precisa ter pelo menos 6 caracteres.'); return; }
+  if(senha!==senhaConfirm){ showToast('As senhas não coincidem.'); return; }
+  if(perfil!=='Master' && lojas.length===0){ showToast('Selecione pelo menos uma loja para este usuário.'); return; }
+  const res = await api('adminCreateUser', {nome, usuario, telefone, email, perfil, senha, ativarImediatamente, lojas});
+  if(res.ok){
+    closeModal('adminCreateUserModal');
+    showToast(`Usuário "${usuario}" criado como ${perfil}${ativarImediatamente?' e já ativo':' (pendente de autorização)'}.`);
+    refreshAdminUsers();
+  } else {
+    showToast(res.error || 'Falha ao criar usuário.');
+  }
+}
+async function refreshAdminLogs(){
+  const res = await api('adminListAccessLogs', {});
+  if(!res.ok) return;
+  document.getElementById('adminLogsBody').innerHTML = res.logs.map(l=>`<tr>
+    <td>${l.Data?new Date(l.Data).toLocaleString('pt-BR'):'—'}</td>
+    <td>${l.Usuario||'—'}</td>
+    <td>${l.Sucesso==='Sim'?'<span class="sla-ok">Sucesso</span>':'<span class="sla-bad">Falha</span>'}</td>
+    <td>${l.Detalhe||''}</td>
+  </tr>`).join('') || '<tr><td colspan="4" class="empty">Nenhum acesso registrado</td></tr>';
+}
+
+// ===== INICIALIZAÇÃO =====
+(function initAuth(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('reset')){
+    document.getElementById('authScreen').style.display='flex';
+    showAuthCard('authCardReset');
+    return;
+  }
+  const saved = localStorage.getItem(SESSION_STORAGE_KEY);
+  if(saved){
+    try{
+      currentSession = JSON.parse(saved);
+      if(currentSession.loja){
+        enterApp();
+        api('listLojas', {}).then(res=>{ if(res.ok){ allLojasCache = res.lojas; enterApp(); } });
+      } else {
+        proceedAfterLogin();
+      }
+      return;
+    }catch(e){ localStorage.removeItem(SESSION_STORAGE_KEY); }
+  }
+  document.getElementById('authScreen').style.display='flex';
+  showAuthCard('authCardLogin');
+})();
+</script>
+</body>
+</html>
